@@ -1,5 +1,5 @@
 import pygame
-from game.game_manager import GameManager
+from Backend.game_manager import GameManager
 
 SCREEN_WIDTH, SCREEN_HEIGHT, FPS = 1200, 700, 30
 

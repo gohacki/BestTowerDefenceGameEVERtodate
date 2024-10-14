@@ -1,6 +1,7 @@
 import pygame
-from game.tower_manager import TowerManager
-from game.enemy_manager import EnemyManager
+from Towers.tower import TowerManager
+from Enemies.enemy import EnemyManager
+from Maps.map import MapManager
 
 # Obviously this code does not create a level, so we may want to create the level_manager file too
 class GameManager:
