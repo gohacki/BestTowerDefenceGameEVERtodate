@@ -15,18 +15,18 @@ pygame.display.set_caption("My Board")
 exit = False
 
 # CREATING ENTITIES
-enemy1 = enemy.Enemy()
+checkpoints = ((50, 0), (50, 400), (800, 400))
+enemy1 = enemy.Enemy(canvas, checkpoints)
 
 while not exit:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit = True
     canvas.fill(background)
-    pygame.draw.rect(canvas, path, pygame.Rect(30, 0, 60, 400))
-    pygame.draw.rect(canvas, path, pygame.Rect(90, 340, 220, 60))
-    pygame.draw.rect(canvas, path, pygame.Rect(250, 150, 60, 190))
-    pygame.draw.rect(canvas, path, pygame.Rect(300, 150, 250, 60))
-    enemy1.draw(canvas)
+    pygame.draw.rect(canvas, path, pygame.Rect(50, 0, 50, 400))
+    pygame.draw.rect(canvas, path, pygame.Rect(50, 400, 800, 50))
+
+    enemy1.draw()
     enemy1.advance()
     pygame.display.update()
 
