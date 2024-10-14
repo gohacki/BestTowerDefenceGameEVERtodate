@@ -10,7 +10,9 @@ class Enemy:
         self.sprite = pygame.Rect(checkpoints[0][0], checkpoints[0][1], 20, 20)
         self.color = (200, 0, 0)
         self.curr_checkpoint = 1
-        self.speed = .3
+        # The higher the value, the slower it moves
+        self.speed = 5
+        self.counter = 0
 
     def get_x(self):
         return self.pos_x
@@ -22,32 +24,34 @@ class Enemy:
         pygame.draw.rect(self.canvas, self.color, self.sprite)
 
     def advance(self):
-        check_x = self.checkpoints[self.curr_checkpoint][0]
-        check_y = self.checkpoints[self.curr_checkpoint][1]
-        margin = self.speed/100
-        
-        # Left of checkpoint
-        if self.pos_x < check_x:
-            self.pos_x += self.speed
+        self.counter += 1
+        if self.counter == self.speed:
+            check_x = self.checkpoints[self.curr_checkpoint][0]
+            check_y = self.checkpoints[self.curr_checkpoint][1]
 
-        # Right of checkpoint
-        if self.pos_x > check_x:
-            self.pos_x -= self.speed
+            # Left of checkpoint
+            if self.pos_x < check_x:
+                self.pos_x += 1
 
-        # Above checkpoint
-        if self.pos_y < check_y:
-            self.pos_y += self.speed
+            # Right of checkpoint
+            if self.pos_x > check_x:
+                self.pos_x -= 1
 
-        # Below checkpoint
-        if self.pos_y > check_y:
-            self.pos_y -= self.speed
+            # Above checkpoint
+            if self.pos_y < check_y:
+                self.pos_y += 1
 
-        # In line with checkpoint
-        if check_x - margin < self.pos_x < check_x + margin:
-            if check_y - self.speed < self.pos_y < check_y + self.speed:
-                self.curr_checkpoint += 1
-                if self.curr_checkpoint == len(self.checkpoints):
-                    self.curr_checkpoint -= 1
+            # Below checkpoint
+            if self.pos_y > check_y:
+                self.pos_y -= 1
 
-        # Modify sprite
-        self.sprite = pygame.Rect(self.pos_x, self.pos_y, 20, 20)
+            # In line with checkpoint
+            if check_x == self.pos_x:
+                if check_y == self.pos_y:
+                    self.curr_checkpoint += 1
+                    if self.curr_checkpoint == len(self.checkpoints):
+                        self.curr_checkpoint -= 1
+
+            # Modify sprite
+            self.sprite = pygame.Rect(self.pos_x, self.pos_y, 20, 20)
+            self.counter = 0
