@@ -14,7 +14,7 @@ class GameManager:
             (600, 700)
         ]
 
-        self.tower_manager = TowerManager(enemy_path)
+        self.tower_manager = TowerManager(screen, enemy_path)
         self.enemy_manager = EnemyManager(screen, enemy_path)
 
     def handle_events(self, event):
