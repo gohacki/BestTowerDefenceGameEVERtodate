@@ -4,14 +4,21 @@ import pygame
 class Enemy:
     def __init__(self, canvas, checkpoints):
         self.canvas = canvas
+        # List of points on the map that enemies approach
         self.checkpoints = checkpoints
+        # Current x position, starts at first checkpoint by default
         self.pos_x = checkpoints[0][0]
+        # Current y position, starts at first checkpoint by default
         self.pos_y = checkpoints[0][1]
+        # The thing to be drawn on canvas; currently a rectangle, to be changed later
         self.sprite = pygame.Rect(checkpoints[0][0], checkpoints[0][1], 20, 20)
+        # Color of rectangle
         self.color = (200, 0, 0)
+        # Checkpoint counter, used to track where the enemy is going
         self.curr_checkpoint = 1
-        # The higher the value, the slower it moves
+        # Moves 1 pixel once every speed frames
         self.speed = 5
+        # Used to track when the next movement should occur
         self.counter = 0
 
     def get_x(self):
@@ -20,13 +27,20 @@ class Enemy:
     def get_y(self):
         return self.pos_y
 
+    # Place the enemy visually on the screen
     def draw(self):
+        # Draw sprite on canvas
         pygame.draw.rect(self.canvas, self.color, self.sprite)
 
+    # Advances 1 pixel towards the next checkpoint once every x times it's called, with x = speed
     def advance(self):
+        # Increment frame tracker
         self.counter += 1
+        # If it's time to move
         if self.counter == self.speed:
+            # X value of next checkpoint
             check_x = self.checkpoints[self.curr_checkpoint][0]
+            # Y value of next checkpoint
             check_y = self.checkpoints[self.curr_checkpoint][1]
 
             # Left of checkpoint
@@ -49,9 +63,23 @@ class Enemy:
             if check_x == self.pos_x:
                 if check_y == self.pos_y:
                     self.curr_checkpoint += 1
+                    # If we reached the last checkpoint, don't advance to next one
                     if self.curr_checkpoint == len(self.checkpoints):
                         self.curr_checkpoint -= 1
 
             # Modify sprite
             self.sprite = pygame.Rect(self.pos_x, self.pos_y, 20, 20)
+            # Reset frame counter
             self.counter = 0
+
+
+# Just used as a translator between GameManager and Enemy
+class EnemyManager:
+    def __init__(self, canvas, checkpoints):
+        self.enemy = Enemy(canvas, checkpoints)
+
+    def update(self):
+        self.enemy.advance()
+
+    def render(self, screen):
+        self.enemy.draw()

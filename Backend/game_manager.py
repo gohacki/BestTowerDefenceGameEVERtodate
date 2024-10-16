@@ -9,7 +9,9 @@ class GameManager:
         self.screen = screen
         self.state = "playing"
         self.tower_manager = TowerManager()
-        self.enemy_manager = EnemyManager()
+        # todo: get checkpoints from the map
+        checkpoints = ()
+        self.enemy_manager = EnemyManager(screen, checkpoints)
 
     def handle_events(self, event):
         if event.type == pygame.QUIT:
@@ -23,7 +25,6 @@ class GameManager:
         if self.state == "playing":
             self.enemy_manager.update()
             self.tower_manager.update()
-
 
     def render(self):
         self.screen.fill((0, 0, 0))
