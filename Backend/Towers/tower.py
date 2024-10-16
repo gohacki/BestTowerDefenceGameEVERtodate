@@ -26,7 +26,7 @@ class TowerManager:
 
         elif event.type == pygame.MOUSEBUTTONDOWN and self.the_tower :
             if self.is_tower_placeable(self.the_tower.rect) :
-                self.towers.append(self.the_tower.rect)
+                self.towers.append(self.the_tower)
                 self.the_tower = None
 
 
