@@ -1,6 +1,6 @@
 import pygame
 from .Towers.tower import TowerManager
-# from Enemies.enemy import EnemyManager
+from .Enemies.enemy import EnemyManager
 # from Maps.map import MapManager
 
 # Obviously this code does not create a level, so we may want to create the level_manager file too
@@ -15,7 +15,7 @@ class GameManager:
         ]
 
         self.tower_manager = TowerManager(enemy_path)
-        # self.enemy_manager = EnemyManager()
+        self.enemy_manager = EnemyManager(screen, enemy_path)
 
     def handle_events(self, event):
         if event.type == pygame.QUIT:
