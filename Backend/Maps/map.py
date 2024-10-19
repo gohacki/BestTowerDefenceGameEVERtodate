@@ -12,24 +12,22 @@ class Map:
 
     # canvas should be the surface within which to display the map and the map name should be a string
     def __init__(self, canvas, map_name):
-        self.path = [[]]
+        self.path = list(list())
         self.canvas = canvas
 
         try:
             # the path is defined as a set of boxed checkpoints which are lists of 4 integers the first two represent
             # the min and max x values respectively and the second two represent the min and max y values respectively
             csv_file_name = map_name + "_checkpoints.csv"
-            print(csv_file_name)
             with open(csv_file_name, newline='') as checkpoints:
                 csv_contents = csv.reader(checkpoints, delimiter=',')
                 for row in csv_contents:
-                    box = []
-                    for bound in row:
-                        box.append(int(bound))
-                self.path.append(box)
+                    point = []
+                    for coord in row:
+                        point.append(int(coord))
+                    self.path.append(point)
 
             map_image_file_name = map_name + ".png"
-            print(map_image_file_name)
             self.back_ground = pygame.image.load(map_image_file_name).convert()
 
         except FileNotFoundError:
@@ -45,26 +43,26 @@ class Map:
     # generated with in a circle for each checkpoint
     # returns a tuple of checkpoints which are tuples of int pairs (x, y) representing pixel coordinates on the screen
     def get_checkpoints_randomized(self):
-        checkpoints = [[]]
+        checkpoints = list(list())
         # slightly randomizing the path within a distance of MAX_PATH_OFFSET from the centerline of the path
         rand_offset = MAX_PATH_OFFSET * random.random()
         rand_angle = 360 * random.random()
         offset = pygame.math.Vector2.from_polar((rand_offset, rand_angle))
-        x_offset = int(offset[1])
-        y_offset = int(offset[2])
+        x_offset = int(offset[0])
+        y_offset = int(offset[1])
         for checkpoint in self.path:
-            x = checkpoint[1] + x_offset
-            y = checkpoint[2] + y_offset
+            x = checkpoint[0] + x_offset
+            y = checkpoint[1] + y_offset
             coords = (x, y)
             checkpoints.append(coords)
         return tuple(checkpoints)
 
     # This method returns a list of checkpoints for the map without randomization
     def get_checkpoints(self):
-        checkpoints = [[]]
+        checkpoints = list(list())
         for checkpoint in self.path:
-            x = checkpoint[1]
-            y = checkpoint[2]
+            x = checkpoint[0]
+            y = checkpoint[1]
             coords = (x, y)
             checkpoints.append(coords)
         return tuple(checkpoints)
@@ -83,8 +81,6 @@ if __name__ == '__main__':
 
     try:
         map_one = Map(screen, 'map_one')
-        print("map init complete")
-        map_one.draw_map()
 
         while running:
             for event in pygame.event.get():
@@ -92,6 +88,7 @@ if __name__ == '__main__':
                     running = False
             map_one.draw_map()
             pygame.display.flip()
+
 
     except MapException:
         print("Maps not working\n")
