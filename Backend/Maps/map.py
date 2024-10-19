@@ -71,13 +71,14 @@ class Map:
 
     # displays the map image
     def draw_map(self):
-        pygame.Surface.blit(self.back_ground, self.canvas, (0, 0), area=(self.canvas.get_width, self.canvas.get_height))
+        self.canvas.blit(self.back_ground, (0, 0))
 
 
 if __name__ == '__main__':
     pygame.init()
     screen = pygame.display.set_mode((1280, 720))
     clock = pygame.time.Clock()
+    pygame.display.set_caption("image")
     running = True
 
     try:
@@ -90,6 +91,7 @@ if __name__ == '__main__':
                 if event.type == pygame.QUIT:
                     running = False
             map_one.draw_map()
+            pygame.display.flip()
 
     except MapException:
         print("Maps not working\n")
