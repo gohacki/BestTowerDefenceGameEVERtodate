@@ -42,9 +42,9 @@ class Map:
             raise MapException
 
     # this method returns a series of checkpoints forming a path for an enemy to follow. The checkpoints are randomly
-    # generated with in a box for each checkpoint
+    # generated with in a circle for each checkpoint
     # returns a tuple of checkpoints which are tuples of int pairs (x, y) representing pixel coordinates on the screen
-    def get_checkpoints(self):
+    def get_checkpoints_randomized(self):
         checkpoints = [[]]
         # slightly randomizing the path within a distance of MAX_PATH_OFFSET from the centerline of the path
         rand_offset = MAX_PATH_OFFSET * random.random()
@@ -53,9 +53,18 @@ class Map:
         x_offset = int(offset[1])
         y_offset = int(offset[2])
         for checkpoint in self.path:
-            # randomly generate coords within box
             x = checkpoint[1] + x_offset
             y = checkpoint[2] + y_offset
+            coords = (x, y)
+            checkpoints.append(coords)
+        return tuple(checkpoints)
+
+    # This method returns a list of checkpoints for the map without randomization
+    def get_checkpoints(self):
+        checkpoints = [[]]
+        for checkpoint in self.path:
+            x = checkpoint[1]
+            y = checkpoint[2]
             coords = (x, y)
             checkpoints.append(coords)
         return tuple(checkpoints)
