@@ -9,7 +9,7 @@ class MapException(Exception):
     pass
 
 
-class Map:
+class MapManager:
 
     # canvas should be the surface within which to display the map and the map name should be a string
     def __init__(self, canvas, map_name):
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     running = True
 
     try:
-        map_one = Map(screen, MAP_NAME)
+        map_one = MapManager(screen, MAP_NAME)
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

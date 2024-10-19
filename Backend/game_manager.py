@@ -1,7 +1,8 @@
 import pygame
 from .Towers.tower import TowerManager
 from .Enemies.enemy import EnemyManager
-# from Maps.map import MapManager
+from .Maps.map import MapManager
+
 
 # Obviously this code does not create a level, so we may want to create the level_manager file too
 class GameManager:
@@ -9,10 +10,9 @@ class GameManager:
         self.screen = screen
         self.state = "playing"
 
-        enemy_path = [
-            (0, 350), (600, 350),
-            (600, 700)
-        ]
+        test_map_name = './Assets/map_one'
+        self.map_manager = MapManager(screen, test_map_name)
+        enemy_path = self.map_manager.get_checkpoints()
 
         self.tower_manager = TowerManager(screen, enemy_path)
         self.enemy_manager = EnemyManager(screen, enemy_path)
@@ -33,7 +33,9 @@ class GameManager:
     def render(self):
         self.screen.fill((0, 0, 0))
         if self.state == "playing":
-            # self.enemy_manager.render(self.screen)
+            self.enemy_manager.update()
+            self.enemy_manager.render(self.screen)
             self.tower_manager.render(self.screen)
+            self.map_manager.draw_map()
 
         pygame.display.flip()
