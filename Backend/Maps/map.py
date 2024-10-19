@@ -4,6 +4,7 @@ import csv
 
 MAX_PATH_OFFSET = 20
 
+# exception for maps to be used for when maps don't load properly
 class MapException(Exception):
     pass
 
@@ -29,11 +30,12 @@ class Map:
 
             map_image_file_name = map_name + ".png"
             self.back_ground = pygame.image.load(map_image_file_name).convert()
-
+        # one of the files was not found
         except FileNotFoundError:
             # TODO: Decide how to handle file not found
             print("map file not found\n")
             raise MapException
+        # the path couldn't be parsed properly
         except ValueError:
             # TODO: Decide how to handle file not found
             print("map file corrupt\n")
@@ -50,6 +52,7 @@ class Map:
         offset = pygame.math.Vector2.from_polar((rand_offset, rand_angle))
         x_offset = int(offset[0])
         y_offset = int(offset[1])
+
         for checkpoint in self.path:
             x = checkpoint[0] + x_offset
             y = checkpoint[1] + y_offset
@@ -59,12 +62,9 @@ class Map:
 
     # This method returns a list of checkpoints for the map without randomization
     def get_checkpoints(self):
-        checkpoints = list(list())
-        for checkpoint in self.path:
-            x = checkpoint[0]
-            y = checkpoint[1]
-            coords = (x, y)
-            checkpoints.append(coords)
+        checkpoints = list()
+        for point in self.path:
+            checkpoints.append(tuple(point))
         return tuple(checkpoints)
 
     # displays the map image
@@ -72,7 +72,11 @@ class Map:
         self.canvas.blit(self.back_ground, (0, 0))
 
 
+# used for testing purposes and previewing new maps
 if __name__ == '__main__':
+
+    MAP_NAME = 'map_one'
+
     pygame.init()
     screen = pygame.display.set_mode((1280, 720))
     clock = pygame.time.Clock()
@@ -80,8 +84,7 @@ if __name__ == '__main__':
     running = True
 
     try:
-        map_one = Map(screen, 'map_one')
-
+        map_one = Map(screen, MAP_NAME)
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
