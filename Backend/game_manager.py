@@ -34,8 +34,9 @@ class GameManager:
         self.screen.fill((0, 0, 0))
         if self.state == "playing":
             self.enemy_manager.update()
+            self.map_manager.draw_map()
             self.enemy_manager.render(self.screen)
             self.tower_manager.render(self.screen)
-            self.map_manager.draw_map()
+
 
         pygame.display.flip()
