@@ -1,5 +1,5 @@
 import pygame
-from enemy_manager import EnemyManager
+from enemy import EnemyManager
 
 '''FOR TESTING ENEMY BEHAVIOR ONLY'''
 
