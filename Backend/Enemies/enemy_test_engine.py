@@ -1,5 +1,5 @@
 import pygame
-import enemy
+from enemy import EnemyManager
 
 '''FOR TESTING ENEMY BEHAVIOR ONLY'''
 
@@ -18,7 +18,7 @@ exit = False
 
 # CREATING ENTITIES
 checkpoints = ((50, 0), (50, 400), (800, 400))
-enemy1 = enemy.Enemy(canvas, checkpoints)
+test = EnemyManager(canvas, checkpoints)
 
 while not exit:
     for event in pygame.event.get():
@@ -30,7 +30,8 @@ while not exit:
     pygame.draw.rect(canvas, path, pygame.Rect(50, 400, 800, 50))
 
     # Call functions from Enemy
-    enemy1.draw()
-    enemy1.advance()
+    test.update()
+    test.render(canvas)
+
     pygame.display.update()
 
