@@ -44,3 +44,12 @@ class EnemyManager:
         # Draw all spawned enemies
         for i in range(self.spawn_counter):
             self.enemies[i].draw()
+
+    def getPositions(self):
+        positions = []
+        counter = 0
+        for enemy in self.enemies:
+            # Create a tuple with x coordinate, y coordinate, and an id
+            positions.append([enemy.get_x(), enemy.get_y(), counter])
+            counter += 1
+        return positions
