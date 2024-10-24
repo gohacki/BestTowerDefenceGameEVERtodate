@@ -4,7 +4,7 @@ import pygame
 class Enemy:
     def __init__(self, canvas, checkpoints):
         self.canvas = canvas
-        self.health = 10
+        self.health = 500
         # List of points on the map that enemies approach
         self.checkpoints = checkpoints
         # Current x position, starts at first checkpoint by default
@@ -33,6 +33,7 @@ class Enemy:
         self.health -= damage
         if self.health <= 0:
             return True
+        return False
 
     # Place the enemy visually on the screen
     def draw(self):

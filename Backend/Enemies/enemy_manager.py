@@ -24,6 +24,7 @@ class EnemyManager:
         self.timer_counter = self.timer_target
         self.wave = generate_wave(self.spawn_target, canvas, checkpoints)
 
+    # Moves all enemies towards next checkpoints, and sometimes spawns new ones
     def update(self):
         # If not all have been spawned
         if self.spawn_counter < self.spawn_target:
@@ -40,11 +41,13 @@ class EnemyManager:
         for enemy in self.enemies:
             enemy.advance()
 
+    # Draws all enemies on the screen
     def render(self, screen):
         # Draw all spawned enemies
-        for i in range(self.spawn_counter):
+        for i in range(len(self.enemies)):
             self.enemies[i].draw()
 
+    # Returns a list of lists, which themselves contain x and y coordinates plus an id
     def getPositions(self):
         positions = []
         counter = 0
@@ -53,3 +56,13 @@ class EnemyManager:
             positions.append([enemy.get_x(), enemy.get_y(), counter])
             counter += 1
         return positions
+
+    # Processes damage on a given enemy NOTE: returns False if enemy does not exist
+    def dealDamage(self, id, damage):
+        # Check to make sure that the enemy we intend to damage actually exists
+        if id >= len(self.enemies):
+            return False
+        # Just calling the damage function in Enemy on the intended target
+        if self.enemies[id].process_damage(damage):
+            # If it dies, remove it from the list
+            self.enemies.remove(self.enemies[id])

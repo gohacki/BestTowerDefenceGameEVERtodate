@@ -28,10 +28,10 @@ while not exit:
     canvas.fill(background)
     pygame.draw.rect(canvas, path, pygame.Rect(50, 0, 50, 400))
     pygame.draw.rect(canvas, path, pygame.Rect(50, 400, 800, 50))
-
     # Call functions from Enemy
     test.update()
     test.render(canvas)
+    test.dealDamage(0, 1)
 
     pygame.display.update()
 
