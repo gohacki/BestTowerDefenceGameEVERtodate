@@ -18,7 +18,7 @@ class Enemy:
         # Checkpoint counter, used to track where the enemy is going
         self.curr_checkpoint = 1
         # Moves 1 pixel once every speed frames
-        self.speed = 5
+        self.speed = 1
         # Used to track when the next movement should occur
         self.counter = 0
 

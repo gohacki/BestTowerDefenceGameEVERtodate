@@ -1,6 +1,6 @@
 import pygame
 from .Towers.tower import TowerManager
-from .Enemies.enemy import EnemyManager
+from .Enemies.enemy_manager import EnemyManager
 from .Maps.map import MapManager
 
 
