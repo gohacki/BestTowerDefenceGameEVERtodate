@@ -5,9 +5,19 @@ from math import sqrt
 # Tower Class allowing tower objects to be placed on the screen
 class Tower:
     # initialize the tower object -- currently set as green square
-    def __init__(self, position):
+    def __init__(self, position, tower_type):
+        self.tower_type = tower_type
+        self.position = position
         self.image = pygame.Surface((40, 40))
-        self.image.fill((0, 255, 0))
+        if tower_type == 1:
+            self.image.fill((0, 255, 0))
+            self.cost = 100
+        elif tower_type == 2:
+            self.image.fill((0, 0, 255))
+            self.cost = 200
+        elif tower_type == 3:
+            self.image.fill((255, 0, 0))
+            self.cost = 300
         self.rect = self.image.get_rect(center=position)
 
     # draw depicts the tower on the screen
@@ -17,25 +27,37 @@ class Tower:
 # TowerManager Class handles pressing of keys and mouse movement to place towers
 class TowerManager:
     # initialize towers to be a list of set towers
-    def __init__(self, screen, enemy_path):
+    def __init__(self, screen, enemy_path, game_manager):
         self.towers = []  # List of placed towers
         self.the_tower = None  # Tower currently being placed
         self.enemy_path = enemy_path
         self.screen = screen
         self.screen_width, self.screen_height = self.screen.get_size() # stores screen size
+        self.game_manager = game_manager  # Reference to GameManager
 
     # handle_event responds to user interaction such as pressing keys or moving/clicking the mouse
-    def handle_event(self, event) :
-        # if 't' key is clicked create a tower at current mouse position. Movement is handled in update
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_t :
-            mouse_position = pygame.mouse.get_pos()
-            self.the_tower = Tower(mouse_position)
-
-        # else if the mouse is clicked place down the tower
-        elif event.type == pygame.MOUSEBUTTONDOWN and self.the_tower :
-            if self.is_tower_placeable(self.the_tower.rect) :
-                self.towers.append(self.the_tower)
-                self.the_tower = None
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_1:
+                self.selected_tower_type = 1
+            elif event.key == pygame.K_2:
+                self.selected_tower_type = 2
+            elif event.key == pygame.K_3:
+                self.selected_tower_type = 3
+            # Start placing the selected tower
+            if self.selected_tower_type:
+                mouse_position = pygame.mouse.get_pos()
+                self.the_tower = Tower(mouse_position, self.selected_tower_type)
+        elif event.type == pygame.MOUSEBUTTONDOWN and self.the_tower:
+            if self.is_tower_placeable(self.the_tower.rect):
+                tower_cost = self.the_tower.cost
+                if self.game_manager.currency >= tower_cost:
+                    self.game_manager.currency -= tower_cost
+                    self.towers.append(self.the_tower)
+                    self.the_tower = None
+                    self.selected_tower_type = None
+                else:
+                    print("Not enough gold!")
 
 
     # is_tower_placeable asks if the tower can be placed at current mouse location given bounds of the path
@@ -56,7 +78,7 @@ class TowerManager:
 
     # manage the new tower being placed by following the mouse cursor
     def update(self) :
-        if self.the_tower :
+        if self.the_tower:
             mouse_position = pygame.mouse.get_pos()
             self.the_tower.rect.center = mouse_position
 

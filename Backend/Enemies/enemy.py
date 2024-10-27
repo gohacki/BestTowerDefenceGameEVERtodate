@@ -79,4 +79,8 @@ class Enemy:
             self.sprite = pygame.Rect(self.pos_x, self.pos_y, 20, 20)
             # Reset frame counter
             self.counter = 0
+    
+    def has_reached_goal(self):
+        goal_x, goal_y = self.checkpoints[-1]
+        return self.pos_x == goal_x and self.pos_y == goal_y
 

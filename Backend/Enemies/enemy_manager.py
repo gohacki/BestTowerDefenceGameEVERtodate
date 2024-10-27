@@ -11,7 +11,7 @@ def generate_wave(num_spawns, canvas, checkpoints):
 
 # Just used as a translator between GameManager and Enemy
 class EnemyManager:
-    def __init__(self, canvas, checkpoints):
+    def __init__(self, canvas, checkpoints, game_manager):
         # List of enemies in the current wave
         self.enemies = []
         # Used to track how many enemies we've created so far
@@ -23,6 +23,7 @@ class EnemyManager:
         # Counter to check if it's time to spawn an enemy yet; start at full
         self.timer_counter = self.timer_target
         self.wave = generate_wave(self.spawn_target, canvas, checkpoints)
+        self.game_manager = game_manager 
 
     # Moves all enemies towards next checkpoints, and sometimes spawns new ones
     def update(self):
@@ -40,6 +41,11 @@ class EnemyManager:
         # Advance all spawned enemies
         for enemy in self.enemies:
             enemy.advance()
+            # I added 
+            if enemy.has_reached_goal():
+                self.enemies.remove(enemy)
+                self.game_manager.user_health -= 10
+    
 
     # Draws all enemies on the screen
     def render(self, screen):
