@@ -8,7 +8,7 @@ from .Maps.map import MapManager
 class GameManager:
     def __init__(self, screen):
         self.screen = screen
-        self.state = "playing"
+        self.state = "start"
 
         test_map_name = './Assets/map_one'
         self.map_manager = MapManager(screen, test_map_name)
@@ -22,8 +22,16 @@ class GameManager:
             pygame.quit()
             exit()
 
-        if self.state == "playing":
+        if self.state == "start":
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                self.state= "playing"
+
+        elif self.state == "playing":
             self.tower_manager.handle_event(event)
+
+        elif self.state in ("win", "lose"):
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                self.reset_game()
 
     def update(self):
         if self.state == "playing":
@@ -31,12 +39,25 @@ class GameManager:
             self.tower_manager.update()
 
     def render(self):
-        self.screen.fill((0, 0, 0))
-        if self.state == "playing":
+        if self.state == "start":
+            self.render_start_screen()
+
+        elif self.state == "playing":
+            self.screen.fill((0, 0, 0))
             self.enemy_manager.update()
             self.map_manager.draw_map()
             self.enemy_manager.render(self.screen)
             self.tower_manager.render(self.screen)
+            self.render_ui()
+
+        elif self.state == "win":
+            self.render_win_screen()
+
+        elif self.state == "lose":
+            self.render_lose_screen()
 
 
         pygame.display.flip()
+
+    def render_start_screen(self):
+
