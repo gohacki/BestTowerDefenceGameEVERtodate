@@ -18,7 +18,7 @@ class Enemy:
         # Checkpoint counter, used to track where the enemy is going
         self.curr_checkpoint = 1
         # Moves 1 pixel once every speed frames
-        self.speed = 1
+        self.speed = 5
         # Used to track when the next movement should occur
         self.counter = 0
 
@@ -83,4 +83,3 @@ class Enemy:
     def has_reached_goal(self):
         goal_x, goal_y = self.checkpoints[-1]
         return self.pos_x == goal_x and self.pos_y == goal_y
-

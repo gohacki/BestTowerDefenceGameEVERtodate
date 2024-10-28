@@ -1,4 +1,4 @@
-from .enemy import Enemy
+from enemy import Enemy
 
 
 # Create a list of enemies for the manager to use
@@ -11,7 +11,7 @@ def generate_wave(num_spawns, canvas, checkpoints):
 
 # Just used as a translator between GameManager and Enemy
 class EnemyManager:
-    def __init__(self, canvas, checkpoints, game_manager):
+    def __init__(self, canvas, checkpoints):
         # List of enemies in the current wave
         self.enemies = []
         # Used to track how many enemies we've created so far
@@ -23,9 +23,9 @@ class EnemyManager:
         # Counter to check if it's time to spawn an enemy yet; start at full
         self.timer_counter = self.timer_target
         self.wave = generate_wave(self.spawn_target, canvas, checkpoints)
-        self.game_manager = game_manager 
 
     # Moves all enemies towards next checkpoints, and sometimes spawns new ones
+    # Returns True if an enemy reaches the end of the map
     def update(self):
         # If not all have been spawned
         if self.spawn_counter < self.spawn_target:
@@ -44,8 +44,7 @@ class EnemyManager:
             # I added 
             if enemy.has_reached_goal():
                 self.enemies.remove(enemy)
-                self.game_manager.user_health -= 10
-    
+                return True
 
     # Draws all enemies on the screen
     def render(self, screen):
@@ -53,6 +52,7 @@ class EnemyManager:
         for i in range(len(self.enemies)):
             self.enemies[i].draw()
 
+    # todo: print results to csv for testing
     # Returns a list of lists, which themselves contain x and y coordinates plus an id
     def getPositions(self):
         positions = []
