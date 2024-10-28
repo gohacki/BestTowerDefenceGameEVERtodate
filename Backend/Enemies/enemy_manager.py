@@ -17,7 +17,7 @@ class EnemyManager:
         # Used to track how many enemies we've created so far
         self.spawn_counter = 0
         # How many enemies we want to create
-        self.spawn_target = 5
+        self.spawn_target = 15
         # How long to wait between spawning enemies
         self.timer_target = 750
         # Counter to check if it's time to spawn an enemy yet; start at full
