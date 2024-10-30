@@ -1,4 +1,4 @@
-from enemy import Enemy
+from .enemy import Enemy
 
 
 # Create a list of enemies for the manager to use

@@ -15,7 +15,7 @@ class GameManager:
         self.enemy_path = self.map_manager.get_checkpoints()
 
         self.tower_manager = TowerManager(self.screen, self.enemy_path, self)
-        self.enemy_manager = EnemyManager(self.screen, self.enemy_path, self)
+        self.enemy_manager = EnemyManager(self.screen, self.enemy_path)
         self.user_health = 100
         self.currency = 500
         self.font = pygame.font.Font(None, 36)
