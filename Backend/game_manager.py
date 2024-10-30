@@ -10,6 +10,11 @@ class GameManager:
         self.screen = screen
         self.state = "start"
 
+        # notifications for the user
+        self.notification = ""
+        self.notification_time = 0
+
+
         test_map_name = './Assets/map_one'
         self.map_manager = MapManager(screen, test_map_name)
         self.enemy_path = self.map_manager.get_checkpoints()
@@ -71,10 +76,10 @@ class GameManager:
     def render_start_screen(self):
         self.screen.fill((0, 0, 0))
         font = pygame.font.Font(None, 74)
-        text = font.render("Tower Defense Game", True, (255, 255, 255))
+        text = font.render("Best Tower Defense Game Ever To Date", True, (255, 255, 255))
         self.screen.blit(text, (self.screen.get_width() // 2 - text.get_width() // 2, 200))
         font = pygame.font.Font(None, 36)
-        instructions = font.render("Press Enter to Start", True, (255, 255, 255))
+        instructions = font.render("Press Enter to Start Please", True, (255, 255, 255))
         self.screen.blit(instructions, (self.screen.get_width() // 2 - instructions.get_width() // 2, 300))
 
     def render_win_screen(self):
@@ -100,11 +105,19 @@ class GameManager:
         health_text = self.font.render(f"Health: {self.user_health}", True, (255, 255, 255))
         self.screen.blit(health_text, (10, 10))
         # Display Currency
-        currency_text = self.font.render(f"Gold: {self.currency}", True, (255, 255, 0))
+        currency_text = self.font.render(f"Gold Dabloons: {self.currency}", True, (255, 255, 0))
         self.screen.blit(currency_text, (10, 50))
         # Display Tower Select Instructions
         instructions = self.font.render("Press '1', '2', '3' to select towers", True, (255, 255, 255))
         self.screen.blit(instructions, (10, self.screen.get_height() - 30))
+        # Used to send notifications directly to user if called in tower.py.
+        if self.notification :
+            if pygame.time.get_ticks() - self.notification_time < 2000 :
+                notification_text = self.font.render(self.notification, True, (255, 0, 0))
+                self.screen.blit(notification_text,
+                                 (self.screen.get_width() // 2 - notification_text.get_width() // 2, 100))
+            else:
+                self.notification = ""
 
     def reset_game(self):
         self.state = "start"
@@ -115,3 +128,6 @@ class GameManager:
         self.tower_manager = TowerManager(self.screen, self.enemy_path, self)
     
 
+    def set_notification(self, message):
+        self.notification = message
+        self.notification_time = pygame.time.get_ticks()

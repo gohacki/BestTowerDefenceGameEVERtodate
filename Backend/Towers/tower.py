@@ -10,6 +10,7 @@ class Tower:
         self.position = position
         self.image = pygame.Surface((40, 40))
         if tower_type == 1:
+            #self.image = pygame.image.load("Assets/Allison's Tower.jpg")
             self.image.fill((0, 255, 0))
             self.cost = 100
         elif tower_type == 2:
@@ -58,6 +59,7 @@ class TowerManager:
                     self.selected_tower_type = None
                 else:
                     print("Not enough gold!")
+                    self.game_manager.set_notification("Not enough gold!")
 
 
     # is_tower_placeable asks if the tower can be placed at current mouse location given bounds of the path
