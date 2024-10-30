@@ -15,7 +15,6 @@ class MapManager:
     def __init__(self, canvas, map_name):
         self.path = list(list())
         self.canvas = canvas
-
         try:
             # the path is defined as a set of boxed checkpoints which are lists of 4 integers the first two represent
             # the min and max x values respectively and the second two represent the min and max y values respectively
@@ -40,6 +39,16 @@ class MapManager:
             # TODO: Decide how to handle file not found
             print("map file corrupt\n")
             raise MapException
+
+        # miro
+        self.path_surface = pygame.Surface((self.canvas.get_width(), self.canvas.get_height()), pygame.SRCALPHA)
+        self.draw_path()
+        self.path_mask = pygame.mask.from_surface(self.path_surface)
+    
+    # miro
+    def draw_path(self):
+        checkpoints = self.get_checkpoints()
+        pygame.draw.lines(self.path_surface, (255, 255, 255), False, checkpoints, MAX_PATH_OFFSET * 2)
 
     # this method returns a series of checkpoints forming a path for an enemy to follow. The checkpoints are randomly
     # generated with in a circle for each checkpoint

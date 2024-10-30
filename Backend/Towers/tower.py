@@ -27,13 +27,15 @@ class Tower:
 # TowerManager Class handles pressing of keys and mouse movement to place towers
 class TowerManager:
     # initialize towers to be a list of set towers
-    def __init__(self, screen, enemy_path, game_manager):
+    def __init__(self, screen, enemy_path, game_manager, path_mask):
         self.towers = []  # List of placed towers
         self.the_tower = None  # Tower currently being placed
         self.enemy_path = enemy_path
         self.screen = screen
         self.screen_width, self.screen_height = self.screen.get_size() # stores screen size
         self.game_manager = game_manager  # Reference to GameManager
+        # initialize path that towers cannot be placed on
+        self.path_mask = path_mask
 
     # handle_event responds to user interaction such as pressing keys or moving/clicking the mouse
     def handle_event(self, event):
@@ -61,13 +63,17 @@ class TowerManager:
 
 
     # is_tower_placeable asks if the tower can be placed at current mouse location given bounds of the path
-    def is_tower_placeable(self, tower_rect) :
-        # returns false to say that tower is too close to enemy path bounds of 20 pixels
-        for (x,y) in self.enemy_path:
-            if self.distance_to_point(tower_rect.center, (x, y)) < 20.0:
-                return False
+    def is_tower_placeable(self, tower_rect):
+        # create a mask for the tower
+        tower_mask = pygame.mask.from_surface(self.the_tower.image)
+        tower_offset = tower_rect.topleft
 
-        screen_rect = pygame.Rect(0,0, self.screen_width, self.screen_height)
+        # check if tower and path overlap.
+        if self.path_mask.overlap(tower_mask, tower_offset):
+            return False
+
+        # check if the tower is on the screen
+        screen_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
         return screen_rect.contains(tower_rect)
 
 

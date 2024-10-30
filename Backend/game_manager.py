@@ -14,7 +14,7 @@ class GameManager:
         self.map_manager = MapManager(screen, test_map_name)
         self.enemy_path = self.map_manager.get_checkpoints()
 
-        self.tower_manager = TowerManager(self.screen, self.enemy_path, self)
+        self.tower_manager = TowerManager(self.screen, self.enemy_path, self, self.map_manager.path_mask)
         self.enemy_manager = EnemyManager(self.screen, self.enemy_path)
         self.user_health = 100
         self.currency = 500
