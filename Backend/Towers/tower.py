@@ -28,28 +28,23 @@ class Tower:
 class TowerManager:
     # initialize towers to be a list of set towers
     def __init__(self, screen, enemy_path, game_manager, path_mask):
-        self.towers = []  # List of placed towers
-        self.the_tower = None  # Tower currently being placed
+        self.towers = []
+        self.the_tower = None
+        self.selected_tower_type = None
         self.enemy_path = enemy_path
         self.screen = screen
         self.screen_width, self.screen_height = self.screen.get_size() # stores screen size
-        self.game_manager = game_manager  # Reference to GameManager
+        self.game_manager = game_manager
         # initialize path that towers cannot be placed on
         self.path_mask = path_mask
 
     # handle_event responds to user interaction such as pressing keys or moving/clicking the mouse
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_1:
-                self.selected_tower_type = 1
-            elif event.key == pygame.K_2:
-                self.selected_tower_type = 2
-            elif event.key == pygame.K_3:
-                self.selected_tower_type = 3
-            # Start placing the selected tower
-            if self.selected_tower_type:
-                mouse_position = pygame.mouse.get_pos()
-                self.the_tower = Tower(mouse_position, self.selected_tower_type)
+            if event.key == pygame.K_ESCAPE and self.the_tower:
+                # Unselect the current tower
+                self.the_tower = None
+                self.selected_tower_type = None
         elif event.type == pygame.MOUSEBUTTONDOWN and self.the_tower:
             if self.is_tower_placeable(self.the_tower.rect):
                 tower_cost = self.the_tower.cost
@@ -60,6 +55,8 @@ class TowerManager:
                     self.selected_tower_type = None
                 else:
                     print("Not enough gold!")
+            else:
+                print("Cannot place tower here!")
 
 
     # is_tower_placeable asks if the tower can be placed at current mouse location given bounds of the path
@@ -76,7 +73,10 @@ class TowerManager:
         screen_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
         return screen_rect.contains(tower_rect)
 
-
+    def select_tower(self, tower_type):
+        self.selected_tower_type = tower_type
+        mouse_position = pygame.mouse.get_pos()
+        self.the_tower = Tower(mouse_position, tower_type)
 
     # using the euclidean distance formula between two points return value
     def distance_to_point(self, pointA, pointB) :
