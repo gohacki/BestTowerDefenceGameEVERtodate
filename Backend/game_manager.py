@@ -4,21 +4,24 @@ from .Enemies.enemy_manager import EnemyManager
 from .Maps.map import MapManager
 
 
-# Obviously this code does not create a level, so we may want to create the level_manager file too
+#TODO Obviously this code does not create a level, so we may want to create the level_manager file too
+
+# Main class to handle each of the game states and potential interactions
 class GameManager:
     def __init__(self, screen):
         self.screen = screen
         self.state = "start"
 
-        # notifications for the user
+        # useful to display notifications for the user
         self.notification = ""
         self.notification_time = 0
 
-
+        # laod the game map, and get the checkpoints of given display
         test_map_name = './Assets/map_one'
         self.map_manager = MapManager(screen, test_map_name)
         self.enemy_path = self.map_manager.get_checkpoints()
 
+        # initialize the towers and game values that will be displayed
         self.tower_manager = TowerManager(self.screen, self.enemy_path, self, self.map_manager.path_mask)
         self.enemy_manager = EnemyManager(self.screen, self.enemy_path)
         self.user_health = 100
@@ -27,11 +30,13 @@ class GameManager:
         self.create_tower_buttons()
         self.paused = False
 
+    # Handle possible user inputs and call to each state of game play
     def handle_events(self, event):
+        # if user wishes to quit exit the game
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-        
+        # if user wishes to pause game they can type "p"
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_p:
                 self.paused = not self.paused
@@ -42,6 +47,7 @@ class GameManager:
                 self.state= "playing"
 
         elif self.state == "playing":
+            # if user pushes the mouse while in the playing state
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 # check if a tower button was clicked
@@ -55,6 +61,7 @@ class GameManager:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                 self.reset_game()
 
+    # update each of the state managing features, and win/loss conditions
     def update(self):
         if self.state == "playing" and not self.paused:
             self.enemy_manager.update()
@@ -63,27 +70,32 @@ class GameManager:
             enemy_positions = self.enemy_manager.getPositions()
             goal_x, goal_y = self.enemy_path[-1]
 
+            # evaluate to see if the enemies have reached all the way to the goal
             enemies_reached_goal = []
-
             for pos in enemy_positions:
                 enemy_x, enemy_y, enemy_id = pos
 
                 if self.has_enemy_reached_goal(enemy_x, enemy_y, goal_x, goal_y):
                     enemies_reached_goal.append(enemy_id)
 
+            # if the enemy has reached the goal reduce user health
             for enemy_id in enemies_reached_goal:
                 self.user_health -= 10
                 self.enemy_manager.dealDamage(enemy_id, 1000)
 
+            # check to see of the user still has health, and then change state accordingly
             if self.user_health <= 0:
                 self.state = "lose"
             elif not self.enemy_manager.enemies and self.enemy_manager.spawn_counter >= self.enemy_manager.spawn_target:
                 self.state = "win"
 
+    # render is responsible for the current state of the game that the user is in
     def render(self):
+        # based on which state you are in
         if self.state == "start":
             self.render_start_screen()
 
+        # render and display the screen, enemies, towers and the map,
         elif self.state == "playing":
             self.screen.fill((0, 0, 0))
             self.map_manager.draw_map()
@@ -99,9 +111,9 @@ class GameManager:
         elif self.state == "lose":
             self.render_lose_screen()
 
-
         pygame.display.flip()
 
+    # star screen display and lettering along with instructions
     def render_start_screen(self):
         self.screen.fill((0, 0, 0))
         font = pygame.font.Font(None, 74)
@@ -111,6 +123,7 @@ class GameManager:
         instructions = font.render("Press Enter to Start Please", True, (255, 255, 255))
         self.screen.blit(instructions, (self.screen.get_width() // 2 - instructions.get_width() // 2, 300))
 
+    # win screen display and lettering
     def render_win_screen(self):
         self.screen.fill((0, 0, 0))
         font = pygame.font.Font(None, 74)
@@ -120,6 +133,7 @@ class GameManager:
         instructions = font.render("Press R to Restart", True, (255, 255, 255))
         self.screen.blit(instructions, (self.screen.get_width() // 2 - instructions.get_width() // 2, 300))
 
+    # loss screen display and lettering
     def render_lose_screen(self):
         self.screen.fill((0, 0, 0))
         font = pygame.font.Font(None, 74)
@@ -129,9 +143,10 @@ class GameManager:
         instructions = font.render("Press R to Restart", True, (255, 255, 255))
         self.screen.blit(instructions, (self.screen.get_width() // 2 - instructions.get_width() // 2, 300))
 
+    # create the tower selection buttons
     def render_tower_selection_ui(self):
         for rect, tower_type in self.tower_buttons:
-
+            # set each tower to be a different color based on type
             color = (0, 255, 0) if tower_type == 1 else (0, 0, 255) if tower_type == 2 else (255, 0, 0)
             pygame.draw.rect(self.screen, color, rect)
 
@@ -139,25 +154,27 @@ class GameManager:
             label_rect = tower_label.get_rect(center=rect.center)
             self.screen.blit(tower_label, label_rect)
 
+    # position the towers within the screen
     def create_tower_buttons(self):
         self.button_size = (50, 50)
         margin = 60
         y_position = self.screen.get_height() - self.button_size[1] - margin
 
         self.tower_buttons = []
-
         num_buttons = 3
         total_width = num_buttons * self.button_size[0] + (num_buttons - 1) * margin
 
+        # center the buttons horizontally on the screen
         start_x = (self.screen.get_width() - total_width) // 2
         for i in range(num_buttons):
             x_position = start_x + i * (self.button_size[0] + margin) - 100
             rect = pygame.Rect(x_position, y_position, *self.button_size)
             self.tower_buttons.append((rect, i + 1))
 
+    # create the pause text and slow of game play
     def render_pause_menu(self):
         overlay = pygame.Surface((self.screen.get_width(), self.screen.get_height()), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 128))
+        overlay.fill((0, 0, 0, 128)) # allows you to still see through
         self.screen.blit(overlay, (0, 0))
 
         font = pygame.font.Font(None, 74)
@@ -167,11 +184,12 @@ class GameManager:
         instructions = font_small.render("Press 'P' to Resume", True, (255, 255, 255))
         self.screen.blit(instructions, (self.screen.get_width() // 2 - instructions.get_width() // 2, self.screen.get_height() // 2 + 20))
 
+    # displays interactions for the user
     def render_ui(self):
         # Display health
         health_text = self.font.render(f"Health: {self.user_health}", True, (255, 255, 255))
         self.screen.blit(health_text, (10, 10))
-        # Display gold
+        # Display gold currency
         currency_text = self.font.render(f"Gold Dabloons: {self.currency}", True, (255, 255, 0))
         self.screen.blit(currency_text, (10, 50))
         self.render_tower_selection_ui()
