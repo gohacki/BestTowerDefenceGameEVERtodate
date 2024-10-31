@@ -19,6 +19,7 @@ class Tower:
         elif tower_type == 3:
             self.image.fill((255, 0, 0))
             self.cost = 300
+        # sets position centered on rectangel
         self.rect = self.image.get_rect(center=position)
 
     # draw depicts the tower on the screen
