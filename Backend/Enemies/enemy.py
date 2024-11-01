@@ -22,6 +22,8 @@ class Enemy:
         self.speed = 1
         # Used to track when the next movement should occur
         self.counter = 0
+        # Tracks if it has reached the last checkpoint
+        self.reached_end = False
 
     def get_x(self):
         return self.pos_x
@@ -75,6 +77,7 @@ class Enemy:
                     # If we reached the last checkpoint, don't advance to next one
                     if self.curr_checkpoint == len(self.checkpoints):
                         self.curr_checkpoint -= 1
+                        self.reached_end = True
 
             # Modify sprite
             self.sprite = pygame.Rect(self.pos_x, self.pos_y, 20, 20)
@@ -82,5 +85,4 @@ class Enemy:
             self.counter = 0
     
     def has_reached_goal(self):
-        goal_x, goal_y = self.checkpoints[-1]
-        return self.pos_x == goal_x and self.pos_y == goal_y
+        return self.reached_end

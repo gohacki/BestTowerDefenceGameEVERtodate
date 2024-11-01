@@ -41,7 +41,7 @@ class EnemyManager:
         # Advance all spawned enemies
         for enemy in self.enemies:
             enemy.advance()
-            # I added 
+            # Eliminate if it reaches the last checkpoint
             if enemy.has_reached_goal():
                 self.enemies.remove(enemy)
                 return True
@@ -52,7 +52,6 @@ class EnemyManager:
         for i in range(len(self.enemies)):
             self.enemies[i].draw()
 
-    # todo: print results to csv for testing
     # Returns a list of lists, which themselves contain x and y coordinates plus an id
     def getPositions(self):
         positions = []
