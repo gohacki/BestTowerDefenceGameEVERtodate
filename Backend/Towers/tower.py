@@ -13,12 +13,21 @@ class Tower:
             #self.image = pygame.image.load("Assets/Allison's Tower.jpg")
             self.image.fill((0, 255, 0))
             self.cost = 100
+            self.range = 150
+            self.attack_rate = 3
+            self.attack_damage = 65
         elif tower_type == 2:
             self.image.fill((0, 0, 255))
             self.cost = 200
+            self.range = 200
+            self.attack_rate = 4
+            self.attack_damage = 80
         elif tower_type == 3:
             self.image.fill((255, 0, 0))
             self.cost = 300
+            self.range = 100
+            self.attack_rate = 1
+            self.attack_damage = 25
         # sets position centered on rectangel
         self.rect = self.image.get_rect(center=position)
 
