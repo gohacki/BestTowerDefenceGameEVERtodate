@@ -45,8 +45,8 @@ class Tower:
             return False
 
     # returns the range, damage, and position of the tower in a dictionary
-    def get_attack(self):
-        return {"range": self.range, "damage": self.attack_damage, "position": self.position}
+    def get_attack(self, index):
+        return {"range": self.range, "damage": self.attack_damage, "position": self.position, "id": index}
 
     def reset_attack_cooldown(self):
         self.frames_since_attack = 0
@@ -126,9 +126,9 @@ class TowerManager:
     # this function
     def get_attacking_towers(self):
         attacking_towers = []
-        for tower in self.towers:
+        for index, tower in enumerate(self.towers):
             if tower.can_attack():
-                attacking_towers.append(tower.get_attack())
+                attacking_towers.append(tower.get_attack(index))
             else:
                 attacking_towers.append(False)
         return attacking_towers
