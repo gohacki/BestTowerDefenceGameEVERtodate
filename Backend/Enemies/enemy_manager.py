@@ -41,7 +41,7 @@ class EnemyManager:
         # Advance all spawned enemies
         for enemy in self.enemies:
             enemy.advance()
-            # I added 
+            # Eliminate if it reaches the last checkpoint
             if enemy.has_reached_goal():
                 self.enemies.remove(enemy)
                 return True
