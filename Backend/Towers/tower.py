@@ -36,7 +36,7 @@ class Tower:
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 
-    #
+    # returns true if a tower is ready to attack and false otherwise
     def can_attack(self):
         if self.frames_since_attack >= self.attack_rate:
             return True
@@ -44,6 +44,7 @@ class Tower:
 
             return False
 
+    # returns the range, damage, and position of the tower in a dictionary
     def get_attack(self):
         return {"range": self.range, "damage": self.attack_damage, "position": self.position}
 
@@ -132,7 +133,7 @@ class TowerManager:
                 attacking_towers.append(False)
         return attacking_towers
 
-    # this function takes a list of all towers with true or false values for if they attacked or not
+    # takes a list of all towers with true or false values for if they attacked or not
     # and resets their attack timer if they did
     def reset_attack_cooldowns(self, towers_that_attacked):
         for index, tower_attacked in enumerate(towers_that_attacked):
