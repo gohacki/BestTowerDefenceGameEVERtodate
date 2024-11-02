@@ -69,14 +69,16 @@ class GameManager:
         if self.state == "playing" and not self.paused:
             self.enemy_manager.update()
             self.tower_manager.update()
-
+            self.manage_attacks()
             enemy_positions = self.enemy_manager.get_positions()
             goal_x, goal_y = self.enemy_path[-1]
 
             # evaluate to see if the enemies have reached all the way to the goal
             enemies_reached_goal = []
             for pos in enemy_positions:
-                enemy_x, enemy_y, enemy_id = pos
+                enemy_x = pos["enemy_x"]
+                enemy_y = pos["enemy_y"]
+                enemy_id = pos["enemy_id"]
 
                 if self.has_enemy_reached_goal(enemy_x, enemy_y, goal_x, goal_y):
                     enemies_reached_goal.append(enemy_id)
@@ -106,7 +108,7 @@ class GameManager:
             self.tower_manager.render(self.screen)
             while self.bullets:
                 bullet_line = self.bullets.pop(0)
-                pygame.draw.line(self.screen, BULLET_COLOR, bullet_line(0), bullet_line(1), width=1)
+                pygame.draw.line(self.screen, BULLET_COLOR, bullet_line[0], bullet_line[1], width=1)
 
             self.render_ui()
             if self.paused:
@@ -233,27 +235,32 @@ class GameManager:
         enemy_positions = self.enemy_manager.get_positions()
         checkpoints = self.map_manager.get_checkpoints()
         for enemy in enemy_positions:
-            next_checkpoint_coords = checkpoints(enemy["next_checkpoint"])
+            next_checkpoint_coords = checkpoints[enemy["next_checkpoint"]]
             enemy_position = pygame.math.Vector2(enemy["enemy_x"], enemy["enemy_y"])
             enemy["distance_next"] = enemy_position.distance_squared_to(next_checkpoint_coords)
 
         # sort enemies so that the enemy closest to the end is first
-        enemy_positions.sort(key=lambda checkpoint: enemy_positions["distance_next"])
-        enemy_positions.sort(key=lambda distance_checkpoint: enemy_positions["next_checkpoint"], reverse=True)
+        enemy_positions.sort(key=lambda position: position["distance_next"])
+        enemy_positions.sort(key=lambda position: position["next_checkpoint"], reverse=True)
 
         for tower in attacking_towers:
-            # I think this is correct
-            tower_range_squared = tower["range"] ** 2
+            if tower:
+                print("tower is attacking")
+                # I think this is correct
+                print(tower["position"])
+                tower_range_squared = tower["range"] ** 2
+                print(tower_range_squared)
+                for index, enemy in enumerate(enemy_positions):
+                    print((enemy["enemy_x"], enemy["enemy_y"]))
+                    enemy_position = pygame.math.Vector2(enemy["enemy_x"], enemy["enemy_y"])
+                    distance_to_tower_squared = enemy_position.distance_squared_to(tower["position"])
+                    print(distance_to_tower_squared)
 
-            for index, enemy in enumerate(enemy_positions):
-                enemy_position = pygame.math.Vector2(enemy["enemy_x"], enemy["enemy_y"])
-                distance_to_tower_squared = enemy_position.distance_squared_to(tower["position"])
-
-                if distance_to_tower_squared <= tower_range_squared:
-                    damage_result = self.enemy_manager.deal_damage(enemy["enemy_id"], tower["damage"])
-                    self.bullets.append((enemy_position, tower["position"]))
-                    if damage_result == 2:  # the enemy died
-                        enemy_positions.pop(index)
-                        # TODO: rotate tower to point at enemy
-                        self.currency += ENEMY_KILL_VALUE
+                    if distance_to_tower_squared <= tower_range_squared:
+                        damage_result = self.enemy_manager.deal_damage(enemy["enemy_id"], tower["damage"])
+                        self.bullets.append((enemy_position, tower["position"]))
+                        if damage_result == 2:  # the enemy died
+                            enemy_positions.pop(index)
+                            # TODO: rotate tower to point at enemy
+                            self.currency += ENEMY_KILL_VALUE
 

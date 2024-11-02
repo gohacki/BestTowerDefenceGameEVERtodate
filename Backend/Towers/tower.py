@@ -14,19 +14,19 @@ class Tower:
             # self.image = pygame.image.load("Assets/Allison's Tower.jpg")
             self.image.fill((0, 255, 0))
             self.cost = 100
-            self.range = 150
+            self.range = 500
             self.attack_rate = 3
             self.attack_damage = 65
         elif tower_type == 2:
             self.image.fill((0, 0, 255))
             self.cost = 200
-            self.range = 200
+            self.range = 500
             self.attack_rate = 4
             self.attack_damage = 80
         elif tower_type == 3:
             self.image.fill((255, 0, 0))
             self.cost = 300
-            self.range = 100
+            self.range = 700
             self.attack_rate = 1
             self.attack_damage = 25
         # sets position centered on rectangle
@@ -38,10 +38,10 @@ class Tower:
 
     # returns true if a tower is ready to attack and false otherwise
     def can_attack(self):
+        self.frames_since_attack +=1
         if self.frames_since_attack >= self.attack_rate:
             return True
         else:
-
             return False
 
     # returns the range, damage, and position of the tower in a dictionary
