@@ -9,6 +9,7 @@ class Tower:
         self.tower_type = tower_type
         self.position = position
         self.image = pygame.Surface((40, 40))
+        self.frames_since_attack = 0
         if tower_type == 1:
             #self.image = pygame.image.load("Assets/Allison's Tower.jpg")
             self.image.fill((0, 255, 0))
@@ -28,12 +29,26 @@ class Tower:
             self.range = 100
             self.attack_rate = 1
             self.attack_damage = 25
-        # sets position centered on rectangel
+        # sets position centered on rectangle
         self.rect = self.image.get_rect(center=position)
 
     # draw depicts the tower on the screen
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+
+    #
+    def can_attack(self):
+        if self.frames_since_attack >= self.attack_rate:
+            return True
+        else:
+
+            return False
+    def get_attack(self):
+        return {"range":self.range, "damage":self.attack_damage, "position":self.position}
+
+    def reset_attack_cooldown(self):
+        self.frames_since_attack = 0
+
 
 # TowerManager Class handles pressing of keys and mouse movement to place towers
 class TowerManager:
@@ -89,7 +104,7 @@ class TowerManager:
         mouse_position = pygame.mouse.get_pos()
         self.the_tower = Tower(mouse_position, tower_type)
 
-    # using the euclidean distance formula between two points return value
+    # using the euclidean distance formula between two points return value -- pygame.math has a function for this
     def distance_to_point(self, pointA, pointB) :
         return sqrt((pointA[0]-pointB[0])**2 + (pointA[1]-pointB[1])**2 )
 
@@ -106,3 +121,21 @@ class TowerManager:
 
         if self.the_tower:
             self.the_tower.draw(screen)
+
+    # this function
+    def get_attacking_towers(self):
+        attacking_towers = []
+        for tower in self.towers:
+            if tower.can_attack():
+                attacking_towers.append(tower.get_attack())
+            else:
+                attacking_towers.append(False)
+        return attacking_towers
+
+    # this function takes a list of all towers with true or false values for if they attacked or not
+    # and resets their attack timer if they did
+    def reset_attack_cooldowns(self, towers_that_attacked):
+        for index, tower_attacked in enumerate(towers_that_attacked):
+            if tower_attacked:
+                self.towers[index].reset_attack_cooldown()
+        return
