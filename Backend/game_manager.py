@@ -67,6 +67,7 @@ class GameManager:
             self.enemy_manager.update()
             self.tower_manager.update()
 
+
             enemy_positions = self.enemy_manager.getPositions()
             goal_x, goal_y = self.enemy_path[-1]
 
@@ -218,3 +219,7 @@ class GameManager:
     def set_notification(self, message):
         self.notification = message
         self.notification_time = pygame.time.get_ticks()
+
+    def manage_attacks(self):
+        attacking_towers = self.tower_manager.get_attacking_towers()
+        self.enemy_manager.getPositions()
