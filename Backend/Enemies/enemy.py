@@ -29,6 +29,9 @@ class Enemy:
     def get_y(self):
         return self.pos_y
 
+    def get_next_checkpoint(self):
+        return self.curr_checkpoint
+
     # Decrease health attribute, returns True if it dies
     def process_damage(self, damage):
         self.health -= damage

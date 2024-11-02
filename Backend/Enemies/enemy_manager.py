@@ -53,18 +53,21 @@ class EnemyManager:
             self.enemies[i].draw()
 
     # todo: print results to csv for testing
-    # Returns a list of lists, which themselves contain x and y coordinates plus an id
-    def getPositions(self):
+    # Returns a list of dictionaries, which themselves contain next checkpoint, current x and y coordinates plus an id
+    def get_positions(self):
         positions = []
-        counter = 0
-        for enemy in self.enemies:
-            # Create a tuple with x coordinate, y coordinate, and an id
-            positions.append([enemy.get_x(), enemy.get_y(), counter])
-            counter += 1
+
+        for index, enemy in enumerate(self.enemies):
+            # Create a dictionary with next checkpoint, current x coordinate, current y coordinate, and an id
+            positions.append({"next_checkpoint": enemy.get_next_checkpoint(),
+                              "enemy_x": enemy.get_x(),
+                              "enemy_y": enemy.get_y(),
+                              "enemy_id": index})
+
         return positions
 
     # Processes damage on a given enemy NOTE: returns False if enemy does not exist
-    def dealDamage(self, id, damage):
+    def deal_damage(self, id, damage):
         # Check to make sure that the enemy we intend to damage actually exists
         if id >= len(self.enemies):
             return False
