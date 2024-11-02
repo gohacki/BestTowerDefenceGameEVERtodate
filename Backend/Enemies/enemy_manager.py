@@ -66,12 +66,16 @@ class EnemyManager:
 
         return positions
 
-    # Processes damage on a given enemy NOTE: returns False if enemy does not exist
+    # Processes damage on a given enemy NOTE: returns 0 if enemy does not exist, returns 1 if enemy damaged,
+    # returns 2 if enemy killed
     def deal_damage(self, id, damage):
         # Check to make sure that the enemy we intend to damage actually exists
         if id >= len(self.enemies):
-            return False
+            return 0
         # Just calling the damage function in Enemy on the intended target
         if self.enemies[id].process_damage(damage):
             # If it dies, remove it from the list
             self.enemies.remove(self.enemies[id])
+            return 2
+        else:
+            return 1
