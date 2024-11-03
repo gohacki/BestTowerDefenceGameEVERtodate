@@ -79,6 +79,8 @@ class TowerManager:
                 if self.game_manager.currency >= tower_cost:
                     self.game_manager.currency -= tower_cost
                     self.towers.append(self.the_tower)
+                    # This fixed the issue, tower position was only being set when the user first clicked on the tower.
+                    self.the_tower.position = self.the_tower.rect.center
                     self.the_tower = None
                     self.selected_tower_type = None
                 else:
