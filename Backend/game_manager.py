@@ -3,8 +3,10 @@ from .Towers.tower import TowerManager
 from .Enemies.enemy_manager import EnemyManager
 from .Maps.map import MapManager
 
+ENEMY_KILL_VALUE = 20
 
-#TODO Obviously this code does not create a level, so we may want to create the level_manager file too
+
+# TODO Obviously this code does not create a level, so we may want to create the level_manager file too
 
 # Main class to handle each of the game states and potential interactions
 class GameManager:
@@ -16,7 +18,7 @@ class GameManager:
         self.notification = ""
         self.notification_time = 0
 
-        # laod the game map, and get the checkpoints of given display
+        # load the game map, and get the checkpoints of given display
         test_map_name = './Assets/map_one'
         self.map_manager = MapManager(screen, test_map_name)
         self.enemy_path = self.map_manager.get_checkpoints()
@@ -41,10 +43,10 @@ class GameManager:
             if event.key == pygame.K_p:
                 self.paused = not self.paused
                 return  # Don't process further events when toggling pause
-            
+
         if self.state == "start":
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                self.state= "playing"
+                self.state = "playing"
 
         elif self.state == "playing":
             # if user pushes the mouse while in the playing state
@@ -66,14 +68,16 @@ class GameManager:
         if self.state == "playing" and not self.paused:
             self.enemy_manager.update()
             self.tower_manager.update()
-
-            enemy_positions = self.enemy_manager.getPositions()
+            self.manage_attacks()
+            enemy_positions = self.enemy_manager.get_positions()
             goal_x, goal_y = self.enemy_path[-1]
 
             # evaluate to see if the enemies have reached all the way to the goal
             enemies_reached_goal = []
             for pos in enemy_positions:
-                enemy_x, enemy_y, enemy_id = pos
+                enemy_x = pos["enemy_x"]
+                enemy_y = pos["enemy_y"]
+                enemy_id = pos["enemy_id"]
 
                 if self.has_enemy_reached_goal(enemy_x, enemy_y, goal_x, goal_y):
                     enemies_reached_goal.append(enemy_id)
@@ -81,7 +85,7 @@ class GameManager:
             # if the enemy has reached the goal reduce user health
             for enemy_id in enemies_reached_goal:
                 self.user_health -= 10
-                self.enemy_manager.dealDamage(enemy_id, 1000)
+                self.enemy_manager.deal_damage(enemy_id, 1000)
 
             # check to see of the user still has health, and then change state accordingly
             if self.user_health <= 0:
@@ -101,6 +105,7 @@ class GameManager:
             self.map_manager.draw_map()
             self.enemy_manager.render(self.screen)
             self.tower_manager.render(self.screen)
+
             self.render_ui()
             if self.paused:
                 self.render_pause_menu()
@@ -174,15 +179,17 @@ class GameManager:
     # create the pause text and slow of game play
     def render_pause_menu(self):
         overlay = pygame.Surface((self.screen.get_width(), self.screen.get_height()), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 128)) # allows you to still see through
+        overlay.fill((0, 0, 0, 128))  # allows you to still see through
         self.screen.blit(overlay, (0, 0))
 
         font = pygame.font.Font(None, 74)
         text = font.render("Paused", True, (255, 255, 255))
-        self.screen.blit(text, (self.screen.get_width() // 2 - text.get_width() // 2, self.screen.get_height() // 2 - text.get_height()))
+        self.screen.blit(text, (
+            self.screen.get_width() // 2 - text.get_width() // 2, self.screen.get_height() // 2 - text.get_height()))
         font_small = pygame.font.Font(None, 36)
         instructions = font_small.render("Press 'P' to Resume", True, (255, 255, 255))
-        self.screen.blit(instructions, (self.screen.get_width() // 2 - instructions.get_width() // 2, self.screen.get_height() // 2 + 20))
+        self.screen.blit(instructions, (
+            self.screen.get_width() // 2 - instructions.get_width() // 2, self.screen.get_height() // 2 + 20))
 
     # displays interactions for the user
     def render_ui(self):
@@ -193,8 +200,8 @@ class GameManager:
         currency_text = self.font.render(f"Gold Dabloons: {self.currency}", True, (255, 255, 0))
         self.screen.blit(currency_text, (10, 50))
         self.render_tower_selection_ui()
-        if self.notification :
-            if pygame.time.get_ticks() - self.notification_time < 2000 :
+        if self.notification:
+            if pygame.time.get_ticks() - self.notification_time < 2000:
                 notification_text = self.font.render(self.notification, True, (255, 0, 0))
                 self.screen.blit(notification_text,
                                  (self.screen.get_width() // 2 - notification_text.get_width() // 2, 100))
@@ -211,10 +218,46 @@ class GameManager:
         self.state = "start"
         self.user_health = 100
         self.currency = 500
-        self.enemy_manager = EnemyManager(self.screen, self.enemy_path, self)
-        self.tower_manager = TowerManager(self.screen, self.enemy_path, self)
-    
+        self.enemy_manager = EnemyManager(self.screen, self.enemy_path)
+        self.tower_manager = TowerManager(self.screen, self.enemy_path, self, self.map_manager.path_mask)
 
     def set_notification(self, message):
         self.notification = message
         self.notification_time = pygame.time.get_ticks()
+
+    # manages the towers attacking enemies and controls tower attacks
+    def manage_attacks(self):
+        attacking_towers = self.tower_manager.get_attacking_towers()
+        enemy_positions = self.enemy_manager.get_positions()
+        checkpoints = self.map_manager.get_checkpoints()
+        bullets = []
+        for enemy in enemy_positions:
+            next_checkpoint_coords = checkpoints[enemy["next_checkpoint"]]
+            enemy_position = pygame.math.Vector2(enemy["enemy_x"], enemy["enemy_y"])
+            enemy["distance_next"] = enemy_position.distance_squared_to(next_checkpoint_coords)
+
+        # sort enemies so that the enemy closest to the end is first
+        enemy_positions.sort(key=lambda position: position["distance_next"])
+        enemy_positions.sort(key=lambda position: position["next_checkpoint"], reverse=True)
+
+        for tower in attacking_towers:
+            if tower:
+                # I think this is correct
+                tower_range_squared = tower["range"] ** 2
+                for index, enemy in enumerate(enemy_positions):
+                    enemy_position = pygame.math.Vector2(enemy["enemy_x"], enemy["enemy_y"])
+                    distance_to_tower_squared = enemy_position.distance_squared_to(tower["position"])
+
+                    if distance_to_tower_squared <= tower_range_squared \
+                            and self.tower_manager.reset_attack_cooldown(tower["id"]):
+                        damage_result = self.enemy_manager.deal_damage(enemy["enemy_id"], tower["damage"])
+                        bullets.append((enemy_position, tower["id"]))
+
+                        if damage_result == 2:  # the enemy died
+                            enemy_positions.pop(index)
+                            # TODO: rotate tower to point at enemy
+                            self.currency += ENEMY_KILL_VALUE
+                        # the tower has now attacked an enemy, move to the next tower
+                        break
+
+        self.tower_manager.prepare_attack_animations(bullets)

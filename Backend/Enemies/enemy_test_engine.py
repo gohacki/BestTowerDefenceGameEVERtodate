@@ -31,7 +31,7 @@ while not exit:
     # Call functions from Enemy
     test.update()
     test.render(canvas)
-    test.dealDamage(0, 1)
+    test.deal_damage(0, 1)
 
     pygame.display.update()
 

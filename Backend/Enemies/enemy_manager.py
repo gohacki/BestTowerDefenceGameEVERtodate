@@ -19,7 +19,7 @@ class EnemyManager:
         # How many enemies we want to create
         self.spawn_target = 15
         # How long to wait between spawning enemies
-        self.timer_target = 750
+        self.timer_target = 50
         # Counter to check if it's time to spawn an enemy yet; start at full
         self.timer_counter = self.timer_target
         self.wave = generate_wave(self.spawn_target, canvas, checkpoints)
@@ -52,22 +52,30 @@ class EnemyManager:
         for i in range(len(self.enemies)):
             self.enemies[i].draw()
 
-    # Returns a list of lists, which themselves contain x and y coordinates plus an id
-    def getPositions(self):
+    # todo: print results to csv for testing
+    # Returns a list of dictionaries, which themselves contain next checkpoint, current x and y coordinates plus an id
+    def get_positions(self):
         positions = []
-        counter = 0
-        for enemy in self.enemies:
-            # Create a tuple with x coordinate, y coordinate, and an id
-            positions.append([enemy.get_x(), enemy.get_y(), counter])
-            counter += 1
+
+        for index, enemy in enumerate(self.enemies):
+            # Create a dictionary with next checkpoint, current x coordinate, current y coordinate, and an id
+            positions.append({"next_checkpoint": enemy.get_next_checkpoint(),
+                              "enemy_x": enemy.get_x(),
+                              "enemy_y": enemy.get_y(),
+                              "enemy_id": index})
+
         return positions
 
-    # Processes damage on a given enemy NOTE: returns False if enemy does not exist
-    def dealDamage(self, id, damage):
+    # Processes damage on a given enemy NOTE: returns 0 if enemy does not exist, returns 1 if enemy damaged,
+    # returns 2 if enemy killed
+    def deal_damage(self, id, damage):
         # Check to make sure that the enemy we intend to damage actually exists
         if id >= len(self.enemies):
-            return False
+            return 0
         # Just calling the damage function in Enemy on the intended target
         if self.enemies[id].process_damage(damage):
             # If it dies, remove it from the list
             self.enemies.remove(self.enemies[id])
+            return 2
+        else:
+            return 1
