@@ -3,8 +3,7 @@ from .Towers.tower import TowerManager
 from .Enemies.enemy_manager import EnemyManager
 from .Maps.map import MapManager
 
-ENEMY_KILL_VALUE = 10
-BULLET_COLOR = (255, 255, 255)
+ENEMY_KILL_VALUE = 20
 # TODO Obviously this code does not create a level, so we may want to create the level_manager file too
 
 # Main class to handle each of the game states and potential interactions
@@ -17,7 +16,7 @@ class GameManager:
         self.notification = ""
         self.notification_time = 0
 
-        # laod the game map, and get the checkpoints of given display
+        # load the game map, and get the checkpoints of given display
         test_map_name = './Assets/map_one'
         self.map_manager = MapManager(screen, test_map_name)
         self.enemy_path = self.map_manager.get_checkpoints()
@@ -30,8 +29,6 @@ class GameManager:
         self.font = pygame.font.Font(None, 36)
         self.create_tower_buttons()
         self.paused = False
-
-        self.bullets = []
 
     # Handle possible user inputs and call to each state of game play
     def handle_events(self, event):
@@ -106,9 +103,6 @@ class GameManager:
             self.map_manager.draw_map()
             self.enemy_manager.render(self.screen)
             self.tower_manager.render(self.screen)
-            while self.bullets:
-                bullet_line = self.bullets.pop(0)
-                pygame.draw.line(self.screen, BULLET_COLOR, bullet_line[0], bullet_line[1], width=1)
 
             self.render_ui()
             if self.paused:
@@ -222,8 +216,8 @@ class GameManager:
         self.state = "start"
         self.user_health = 100
         self.currency = 500
-        self.enemy_manager = EnemyManager(self.screen, self.enemy_path, self)
-        self.tower_manager = TowerManager(self.screen, self.enemy_path, self)
+        self.enemy_manager = EnemyManager(self.screen, self.enemy_path)
+        self.tower_manager = TowerManager(self.screen, self.enemy_path, self, self.map_manager.path_mask)
 
     def set_notification(self, message):
         self.notification = message
@@ -234,6 +228,7 @@ class GameManager:
         attacking_towers = self.tower_manager.get_attacking_towers()
         enemy_positions = self.enemy_manager.get_positions()
         checkpoints = self.map_manager.get_checkpoints()
+        bullets = []
         for enemy in enemy_positions:
             next_checkpoint_coords = checkpoints[enemy["next_checkpoint"]]
             enemy_position = pygame.math.Vector2(enemy["enemy_x"], enemy["enemy_y"])
@@ -254,7 +249,7 @@ class GameManager:
                     if distance_to_tower_squared <= tower_range_squared \
                             and self.tower_manager.reset_attack_cooldown(tower["id"]):
                         damage_result = self.enemy_manager.deal_damage(enemy["enemy_id"], tower["damage"])
-                        self.bullets.append((enemy_position, tower["position"]))
+                        bullets.append((enemy_position, tower["id"]))
 
                         if damage_result == 2:  # the enemy died
                             enemy_positions.pop(index)
@@ -262,3 +257,5 @@ class GameManager:
                             self.currency += ENEMY_KILL_VALUE
                         # the tower has now attacked an enemy, move to the next tower
                         break
+
+        self.tower_manager.prepare_attack_animations(bullets)

@@ -14,21 +14,21 @@ class Tower:
             # self.image = pygame.image.load("Assets/Allison's Tower.jpg")
             self.image.fill((0, 255, 0))
             self.cost = 100
-            self.range = 100
-            self.attack_rate = 30
-            self.attack_damage = 65
+            self.range = 150
+            self.attack_rate = 15
+            self.attack_damage = 30
         elif tower_type == 2:
             self.image.fill((0, 0, 255))
             self.cost = 200
             self.range = 200
-            self.attack_rate = 60
+            self.attack_rate = 30
             self.attack_damage = 80
         elif tower_type == 3:
             self.image.fill((255, 0, 0))
             self.cost = 300
             self.range = 300
             self.attack_rate = 60
-            self.attack_damage = 25
+            self.attack_damage = 100
         # sets position centered on rectangle
         self.rect = self.image.get_rect(center=position)
 
@@ -51,6 +51,11 @@ class Tower:
     def reset_attack_cooldown(self):
         self.frames_since_attack = 0
 
+    def get_type(self):
+        return self.tower_type
+    def get_position(self):
+        return self.position
+
 
 # TowerManager Class handles pressing of keys and mouse movement to place towers
 class TowerManager:
@@ -65,6 +70,7 @@ class TowerManager:
         self.game_manager = game_manager
         # initialize path that towers cannot be placed on
         self.path_mask = path_mask
+        self.bullets_to_render = []
 
     # handle_event responds to user interaction such as pressing keys or moving/clicking the mouse
     def handle_event(self, event):
@@ -125,6 +131,18 @@ class TowerManager:
         if self.the_tower:
             self.the_tower.draw(screen)
 
+        while self.bullets_to_render:
+            bullet = self.bullets_to_render.pop(0)
+            bullet_type = self.towers[bullet[1]].get_type()
+            if bullet_type == 1:
+                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width=1)
+            elif bullet_type == 2:
+                pygame.draw.line(screen, (255, 255, 0), self.towers[bullet[1]].get_position(), bullet[0], width=3)
+            elif bullet_type == 3:
+                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width=7)
+
+
+
     # this function
     def get_attacking_towers(self):
         attacking_towers = []
@@ -142,3 +160,6 @@ class TowerManager:
             return True
         except IndexError:
             return False
+
+    def prepare_attack_animations(self, bullets):
+        self.bullets_to_render = bullets
