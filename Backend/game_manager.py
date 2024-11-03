@@ -245,16 +245,11 @@ class GameManager:
 
         for tower in attacking_towers:
             if tower:
-                print("tower is attacking")
                 # I think this is correct
-                print(tower["position"])
                 tower_range_squared = tower["range"] ** 2
-                print(tower_range_squared)
                 for index, enemy in enumerate(enemy_positions):
-                    print((enemy["enemy_x"], enemy["enemy_y"]))
                     enemy_position = pygame.math.Vector2(enemy["enemy_x"], enemy["enemy_y"])
                     distance_to_tower_squared = enemy_position.distance_squared_to(tower["position"])
-                    print(distance_to_tower_squared)
 
                     if distance_to_tower_squared <= tower_range_squared:
                         damage_result = self.enemy_manager.deal_damage(enemy["enemy_id"], tower["damage"])

@@ -19,7 +19,7 @@ class EnemyManager:
         # How many enemies we want to create
         self.spawn_target = 15
         # How long to wait between spawning enemies
-        self.timer_target = 750
+        self.timer_target = 50
         # Counter to check if it's time to spawn an enemy yet; start at full
         self.timer_counter = self.timer_target
         self.wave = generate_wave(self.spawn_target, canvas, checkpoints)
