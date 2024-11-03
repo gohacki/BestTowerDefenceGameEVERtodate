@@ -4,6 +4,8 @@ from .Enemies.enemy_manager import EnemyManager
 from .Maps.map import MapManager
 
 ENEMY_KILL_VALUE = 20
+
+
 # TODO Obviously this code does not create a level, so we may want to create the level_manager file too
 
 # Main class to handle each of the game states and potential interactions
