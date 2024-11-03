@@ -135,10 +135,10 @@ class TowerManager:
                 attacking_towers.append(False)
         return attacking_towers
 
-    # takes a list of all towers with true or false values for if they attacked or not
-    # and resets their attack timer if they did
-    def reset_attack_cooldowns(self, towers_that_attacked):
-        for index, tower_attacked in enumerate(towers_that_attacked):
-            if tower_attacked:
-                self.towers[index].reset_attack_cooldown()
-        return
+    # takes a tower id (the index of the tower in self.towers) and resets it's attack cooldown
+    def reset_attack_cooldown(self, tower_id):
+        try:
+            self.towers[tower_id].reset_attack_cooldown()
+            return True
+        except IndexError:
+            return False

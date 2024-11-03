@@ -251,11 +251,14 @@ class GameManager:
                     enemy_position = pygame.math.Vector2(enemy["enemy_x"], enemy["enemy_y"])
                     distance_to_tower_squared = enemy_position.distance_squared_to(tower["position"])
 
-                    if distance_to_tower_squared <= tower_range_squared:
+                    if distance_to_tower_squared <= tower_range_squared \
+                            and self.tower_manager.reset_attack_cooldown(tower["id"]):
                         damage_result = self.enemy_manager.deal_damage(enemy["enemy_id"], tower["damage"])
                         self.bullets.append((enemy_position, tower["position"]))
+
                         if damage_result == 2:  # the enemy died
                             enemy_positions.pop(index)
                             # TODO: rotate tower to point at enemy
                             self.currency += ENEMY_KILL_VALUE
-
+                        # the tower has now attacked an enemy, move to the next tower
+                        break
