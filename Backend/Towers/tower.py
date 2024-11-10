@@ -156,7 +156,7 @@ class TowerManager:
             bullet = self.bullets_to_render.pop(0)
             bullet_type = self.towers[bullet[1]].get_type()
             if bullet_type == 1:
-                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width=1)
+                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width=10)
             elif bullet_type == 2:
                 pygame.draw.line(screen, (255, 255, 0), self.towers[bullet[1]].get_position(), bullet[0], width=3)
             elif bullet_type == 3:
