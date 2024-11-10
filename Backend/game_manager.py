@@ -13,6 +13,9 @@ class GameManager:
     def __init__(self, screen):
         self.screen = screen
         self.state = "start"
+        self.font = pygame.font.Font(None, 36)
+        self.pause_button_rect = pygame.Rect(10, 90, 100, 40)  # x, y, width, height
+        self.pause_button_text = self.font.render("Pause", True, (255, 255, 255))
 
         # useful to display notifications for the user
         self.notification = ""
@@ -27,8 +30,18 @@ class GameManager:
         self.tower_manager = TowerManager(self.screen, self.enemy_path, self, self.map_manager.path_mask)
         self.enemy_manager = EnemyManager(self.screen, self.enemy_path)
         self.user_health = 100
-        self.currency = 500
-        self.font = pygame.font.Font(None, 36)
+        self.currency = 1000
+        
+
+        # create a dictionary for the tower selection process
+        self.tower_images = {
+            1: pygame.transform.scale(pygame.image.load("Assets/allison_tower.jpg"), (40,40)),
+            2: pygame.transform.scale(pygame.image.load("Assets/eve_tower.jpeg"), (40, 40)),
+            3: pygame.transform.scale(pygame.image.load("Assets/jasper_tower.jpeg"), (40, 40)),
+            4: pygame.transform.scale(pygame.image.load("Assets/miro_tower.jpeg"), (40, 40)),
+            5: pygame.transform.scale(pygame.image.load("Assets/jason_tower.jpeg"), (40, 40))
+        }
+
         self.create_tower_buttons()
         self.paused = False
 
@@ -52,6 +65,10 @@ class GameManager:
             # if user pushes the mouse while in the playing state
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
+                
+                if self.pause_button_rect.collidepoint(mouse_pos):
+                    self.paused = not self.paused
+                    return
                 # check if a tower button was clicked
                 for rect, tower_type in self.tower_buttons:
                     if rect.collidepoint(mouse_pos):
@@ -151,12 +168,14 @@ class GameManager:
     # create the tower selection buttons
     def render_tower_selection_ui(self):
         for rect, tower_type in self.tower_buttons:
-            # set each tower to be a different color based on type
-            color = (0, 255, 0) if tower_type == 1 else (0, 0, 255) if tower_type == 2 else (255, 0, 0)
-            pygame.draw.rect(self.screen, color, rect)
+            # set each tower to be a its corresponding image
+            image = self.tower_images[tower_type]
+            image_rect = image.get_rect(center = rect.center)
+            self.screen.blit(image, image_rect)
 
-            tower_label = self.font.render(f"Tower {tower_type}", True, (255, 255, 255))
-            label_rect = tower_label.get_rect(center=rect.center)
+            names = ["Allison", "Eve", "Jasper", "Miro", "Jason"]
+            tower_label = self.font.render(f"{names[tower_type-1]}", True, (255, 255, 255))
+            label_rect = tower_label.get_rect(center=(rect.centerx, rect.bottom + 15))
             self.screen.blit(tower_label, label_rect)
 
     # position the towers within the screen
@@ -166,13 +185,13 @@ class GameManager:
         y_position = self.screen.get_height() - self.button_size[1] - margin
 
         self.tower_buttons = []
-        num_buttons = 3
+        num_buttons = 5
         total_width = num_buttons * self.button_size[0] + (num_buttons - 1) * margin
 
         # center the buttons horizontally on the screen
         start_x = (self.screen.get_width() - total_width) // 2
         for i in range(num_buttons):
-            x_position = start_x + i * (self.button_size[0] + margin) - 100
+            x_position = start_x + i * (self.button_size[0] + margin) - 200
             rect = pygame.Rect(x_position, y_position, *self.button_size)
             self.tower_buttons.append((rect, i + 1))
 
@@ -207,6 +226,11 @@ class GameManager:
                                  (self.screen.get_width() // 2 - notification_text.get_width() // 2, 100))
             else:
                 self.notification = ""
+        
+        pygame.draw.rect(self.screen, (50, 50, 50), self.pause_button_rect)  # Button background
+        label = self.font.render("Resume" if self.paused else "Pause", True, (255, 255, 255))
+        label_rect = label.get_rect(center=self.pause_button_rect.center)
+        self.screen.blit(label, label_rect)
 
     def has_enemy_reached_goal(self, enemy_x, enemy_y, goal_x, goal_y):
         margin = 5
@@ -217,7 +241,7 @@ class GameManager:
     def reset_game(self):
         self.state = "start"
         self.user_health = 100
-        self.currency = 500
+        self.currency = 1000
         self.enemy_manager = EnemyManager(self.screen, self.enemy_path)
         self.tower_manager = TowerManager(self.screen, self.enemy_path, self, self.map_manager.path_mask)
 
