@@ -43,7 +43,7 @@ class Tower:
             self.image = pygame.transform.scale(self.image, (40, 40))
             self.cost = 500
             self.range = 500
-            self.attack_rate = 150
+            self.attack_rate = 3
             self.attack_damage = 200
         # sets position centered on rectangle
         self.rect = self.image.get_rect(center=position)
@@ -147,6 +147,11 @@ class TowerManager:
         if self.the_tower:
             self.the_tower.draw(screen)
 
+            range_color = (255, 255, 255, 100)
+            range_surface = pygame.Surface((self.the_tower.range * 2, self.the_tower.range * 2), pygame.SRCALPHA)
+            pygame.draw.circle(range_surface, range_color, (self.the_tower.range, self.the_tower.range), self.the_tower.range)
+            screen.blit(range_surface, (self.the_tower.rect.centerx - self.the_tower.range, self.the_tower.rect.centery - self.the_tower.range))
+
         while self.bullets_to_render:
             bullet = self.bullets_to_render.pop(0)
             bullet_type = self.towers[bullet[1]].get_type()
@@ -156,6 +161,10 @@ class TowerManager:
                 pygame.draw.line(screen, (255, 255, 0), self.towers[bullet[1]].get_position(), bullet[0], width=3)
             elif bullet_type == 3:
                 pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width=7)
+            elif bullet_type == 4:
+                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width=3)
+            elif bullet_type == 5:
+                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width=40)
 
 
 
