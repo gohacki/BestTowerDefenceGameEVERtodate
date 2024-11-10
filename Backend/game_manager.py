@@ -173,8 +173,8 @@ class GameManager:
             image_rect = image.get_rect(center = rect.center)
             self.screen.blit(image, image_rect)
 
-
-            tower_label = self.font.render(f"Tower {tower_type}", True, (255, 255, 255))
+            names = ["Allison", "Eve", "Jasper", "Miro", "Jason"]
+            tower_label = self.font.render(f"{names[tower_type-1]}", True, (255, 255, 255))
             label_rect = tower_label.get_rect(center=(rect.centerx, rect.bottom + 15))
             self.screen.blit(tower_label, label_rect)
 
@@ -191,7 +191,7 @@ class GameManager:
         # center the buttons horizontally on the screen
         start_x = (self.screen.get_width() - total_width) // 2
         for i in range(num_buttons):
-            x_position = start_x + i * (self.button_size[0] + margin) - 100
+            x_position = start_x + i * (self.button_size[0] + margin) - 200
             rect = pygame.Rect(x_position, y_position, *self.button_size)
             self.tower_buttons.append((rect, i + 1))
 
