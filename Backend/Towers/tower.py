@@ -8,27 +8,43 @@ class Tower:
     def __init__(self, position, tower_type):
         self.tower_type = tower_type
         self.position = position
-        self.image = pygame.Surface((40, 40))
+        # self.image = pygame.Surface((40, 40))
         self.frames_since_attack = 0
         if tower_type == 1:
-            # self.image = pygame.image.load("Assets/Allison's Tower.jpg")
-            self.image.fill((0, 255, 0))
+            self.image = pygame.image.load("Assets/allison_tower.jpg")
+            self.image = pygame.transform.scale(self.image, (40,40))
             self.cost = 100
             self.range = 150
             self.attack_rate = 15
             self.attack_damage = 30
         elif tower_type == 2:
-            self.image.fill((0, 0, 255))
+            self.image = pygame.image.load("Assets/eve_tower.jpeg")
+            self.image = pygame.transform.scale(self.image, (40,40))
             self.cost = 200
             self.range = 200
             self.attack_rate = 30
             self.attack_damage = 80
         elif tower_type == 3:
-            self.image.fill((255, 0, 0))
+            self.image = pygame.image.load("Assets/jasper_tower.jpeg")
+            self.image = pygame.transform.scale(self.image, (40,40))
             self.cost = 300
             self.range = 300
             self.attack_rate = 60
             self.attack_damage = 100
+        elif tower_type == 4:
+            self.image = pygame.image.load("Assets/miro_tower.jpeg")
+            self.image = pygame.transform.scale(self.image, (40,40))
+            self.cost = 400
+            self.range = 400
+            self.attack_rate = 100
+            self.attack_damage = 130
+        elif tower_type == 5:
+            self.image = pygame.image.load("Assets/jason_tower.jpeg")
+            self.image = pygame.transform.scale(self.image, (40, 40))
+            self.cost = 500
+            self.range = 500
+            self.attack_rate = 150
+            self.attack_damage = 200
         # sets position centered on rectangle
         self.rect = self.image.get_rect(center=position)
 

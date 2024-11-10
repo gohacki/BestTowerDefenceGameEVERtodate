@@ -27,8 +27,18 @@ class GameManager:
         self.tower_manager = TowerManager(self.screen, self.enemy_path, self, self.map_manager.path_mask)
         self.enemy_manager = EnemyManager(self.screen, self.enemy_path)
         self.user_health = 100
-        self.currency = 500
+        self.currency = 1000
         self.font = pygame.font.Font(None, 36)
+
+        # create a dictionary for the tower selection process
+        self.tower_images = {
+            1: pygame.transform.scale(pygame.image.load("Assets/allison_tower.jpg"), (40,40)),
+            2: pygame.transform.scale(pygame.image.load("Assets/eve_tower.jpg"), (40, 40)),
+            3: pygame.transform.scale(pygame.image.load("Assets/jasper_tower.jpg"), (40, 40)),
+            4: pygame.transform.scale(pygame.image.load("Assets/miro_tower.jpg"), (40, 40)),
+            5: pygame.transform.scale(pygame.image.load("Assets/jason_tower.jpg"), (40, 40))
+        }
+
         self.create_tower_buttons()
         self.paused = False
 
@@ -151,12 +161,14 @@ class GameManager:
     # create the tower selection buttons
     def render_tower_selection_ui(self):
         for rect, tower_type in self.tower_buttons:
-            # set each tower to be a different color based on type
-            color = (0, 255, 0) if tower_type == 1 else (0, 0, 255) if tower_type == 2 else (255, 0, 0)
-            pygame.draw.rect(self.screen, color, rect)
+            # set each tower to be a its corresponding image
+            image = self.tower_images[tower_type]
+            image_rect = image.get_rect(center = rect.center)
+            self.screen.blit(image, image_rect)
+
 
             tower_label = self.font.render(f"Tower {tower_type}", True, (255, 255, 255))
-            label_rect = tower_label.get_rect(center=rect.center)
+            label_rect = tower_label.get_rect(center=rect.centerx, rect.bottom + 15)
             self.screen.blit(tower_label, label_rect)
 
     # position the towers within the screen
@@ -166,7 +178,7 @@ class GameManager:
         y_position = self.screen.get_height() - self.button_size[1] - margin
 
         self.tower_buttons = []
-        num_buttons = 3
+        num_buttons = 5
         total_width = num_buttons * self.button_size[0] + (num_buttons - 1) * margin
 
         # center the buttons horizontally on the screen
@@ -217,7 +229,7 @@ class GameManager:
     def reset_game(self):
         self.state = "start"
         self.user_health = 100
-        self.currency = 500
+        self.currency = 1000
         self.enemy_manager = EnemyManager(self.screen, self.enemy_path)
         self.tower_manager = TowerManager(self.screen, self.enemy_path, self, self.map_manager.path_mask)
 
