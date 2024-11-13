@@ -21,7 +21,7 @@ def generate_wave(canvas, checkpoints):
         else:
             # Grab spawn delay, clean it up, push to spawn_delays
             delay = raw_text[i]
-            delay.replace("\n", "")
+            delay = delay.replace("\n", "")
             delay = int(delay)
             spawn_delays.append(delay)
 

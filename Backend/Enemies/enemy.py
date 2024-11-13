@@ -16,7 +16,6 @@ class Enemy:
         # Color of rectangle
         self.color = (200, 0, 0)
         # Checkpoint counter, used to track where the enemy is going
-        # Reducing this from 5 to 1 speeds the enemies up for testing - Miro
         self.curr_checkpoint = 1
         # Used to track when the next movement should occur
         self.counter = 0
@@ -24,15 +23,19 @@ class Enemy:
         self.reached_end = False
 
         match enemy_type:
+            # Bog-standard enemy
             case "default":
                 self.health = 100
                 self.speed = 4
+            # Slow but high health
             case "slow":
                 self.health = 300
                 self.speed = 6
+            # Fast but low health
             case "fast":
                 self.health = 50
                 self.speed = 2
+            # Pretty good speed and health
             case "strong":
                 self.health = 400
                 self.speed = 3
