@@ -1,38 +1,61 @@
-from .enemy import Enemy
+from enemy import Enemy
 
 
 # Create a list of enemies for the manager to use
-def generate_wave(num_spawns, canvas, checkpoints):
+def generate_wave(canvas, checkpoints):
     wave = []
-    for i in range(num_spawns):
-        wave.append(Enemy(canvas, checkpoints))
-    return wave
+    spawn_delays = []
+    infile = open("wave.txt", "r")
+    # Just grab all the text from our file
+    raw_text = infile.readlines()
+    infile.close()
+    # Loop through every line from the file
+    for i in range(0, len(raw_text)):
+        # File alternates between enemy type and spawn delay on each line
+        if i % 2 == 0:
+            # Grab enemy type, clean it up, push to wave
+            enemy_type = raw_text[i]
+            enemy_type = enemy_type.replace('\n', '')
+            enemy = Enemy(canvas, checkpoints, enemy_type)
+            wave.append(enemy)
+        else:
+            # Grab spawn delay, clean it up, push to spawn_delays
+            delay = raw_text[i]
+            delay = delay.replace("\n", "")
+            delay = int(delay)
+            spawn_delays.append(delay)
+
+    return wave, spawn_delays
 
 
 # Just used as a translator between GameManager and Enemy
 class EnemyManager:
     def __init__(self, canvas, checkpoints):
-        # List of enemies in the current wave
+        # List of enemies currently spawned
         self.enemies = []
+        # List of all enemies in the current wave
+        self.wave = []
+        # The spawn delay for each enemy
+        self.spawn_targets = []
+        # Delay for next enemy to be spawned
+        self.current_spawn_target = 0
         # Used to track how many enemies we've created so far
         self.spawn_counter = 0
-        # How many enemies we want to create
-        self.spawn_target = 15
-        # How long to wait between spawning enemies
-        self.timer_target = 50
         # Counter to check if it's time to spawn an enemy yet; start at full
-        self.timer_counter = self.timer_target
-        self.wave = generate_wave(self.spawn_target, canvas, checkpoints)
+        self.timer_counter = self.current_spawn_target
+        self.wave, self.spawn_targets = generate_wave(canvas, checkpoints)
 
     # Moves all enemies towards next checkpoints, and sometimes spawns new ones
     # Returns True if an enemy reaches the end of the map
     def update(self):
         # If not all have been spawned
-        if self.spawn_counter < self.spawn_target:
+        if self.spawn_counter < len(self.wave):
             # If it's time to spawn a new one, reset timer and do so
-            if self.timer_counter == self.timer_target:
+            if self.timer_counter == self.current_spawn_target:
                 # Pull a new enemy from the wave
                 self.enemies.append(self.wave[self.spawn_counter])
+                # Grab next timer target
+                self.current_spawn_target = self.spawn_targets[self.spawn_counter]
                 self.spawn_counter += 1
                 self.timer_counter = 0
             # Otherwise, increment timer
@@ -52,7 +75,6 @@ class EnemyManager:
         for i in range(len(self.enemies)):
             self.enemies[i].draw()
 
-    # todo: print results to csv for testing
     # Returns a list of dictionaries, which themselves contain next checkpoint, current x and y coordinates plus an id
     def get_positions(self):
         positions = []
