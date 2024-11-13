@@ -2,9 +2,9 @@ import pygame
 
 
 class Enemy:
-    def __init__(self, canvas, checkpoints):
+
+    def __init__(self, canvas, checkpoints, enemy_type):
         self.canvas = canvas
-        self.health = 500
         # List of points on the map that enemies approach
         self.checkpoints = checkpoints
         # Current x position, starts at first checkpoint by default
@@ -18,12 +18,25 @@ class Enemy:
         # Checkpoint counter, used to track where the enemy is going
         # Reducing this from 5 to 1 speeds the enemies up for testing - Miro
         self.curr_checkpoint = 1
-        # Moves 1 pixel once every speed frames
-        self.speed = 1
         # Used to track when the next movement should occur
         self.counter = 0
         # Tracks if it has reached the last checkpoint
         self.reached_end = False
+
+        match enemy_type:
+            case "default":
+                self.health = 100
+                self.speed = 4
+            case "slow":
+                self.health = 300
+                self.speed = 6
+            case "fast":
+                self.health = 50
+                self.speed = 2
+            case "strong":
+                self.health = 400
+                self.speed = 3
+
 
 
     def get_x(self):

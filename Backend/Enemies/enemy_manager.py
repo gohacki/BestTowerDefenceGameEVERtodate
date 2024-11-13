@@ -15,8 +15,8 @@ def generate_wave(canvas, checkpoints):
         if i % 2 == 0:
             # Grab enemy type, clean it up, push to wave
             enemy_type = raw_text[i]
-            enemy_type.replace("\n", "")
-            enemy = Enemy(canvas, checkpoints)
+            enemy_type = enemy_type.replace('\n', '')
+            enemy = Enemy(canvas, checkpoints, enemy_type)
             wave.append(enemy)
         else:
             # Grab spawn delay, clean it up, push to spawn_delays
