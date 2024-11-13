@@ -25,6 +25,7 @@ class Enemy:
         # Tracks if it has reached the last checkpoint
         self.reached_end = False
 
+
     def get_x(self):
         return self.pos_x
 
