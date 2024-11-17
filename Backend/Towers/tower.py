@@ -14,37 +14,37 @@ class Tower:
             self.image = pygame.image.load("Assets/allison_tower.jpg")
             self.image = pygame.transform.scale(self.image, (40,40))
             self.cost = 100
-            self.range = 150
-            self.attack_rate = 15
-            self.attack_damage = 30
+            self.range = 75
+            self.attack_rate = 50
+            self.attack_damage = 2
         elif tower_type == 2:
             self.image = pygame.image.load("Assets/eve_tower.jpeg")
             self.image = pygame.transform.scale(self.image, (40,40))
             self.cost = 200
-            self.range = 200
-            self.attack_rate = 30
-            self.attack_damage = 80
+            self.range = 100
+            self.attack_rate = 40
+            self.attack_damage = 5
         elif tower_type == 3:
             self.image = pygame.image.load("Assets/jasper_tower.jpeg")
             self.image = pygame.transform.scale(self.image, (40,40))
             self.cost = 300
-            self.range = 300
-            self.attack_rate = 60
-            self.attack_damage = 100
+            self.range = 150
+            self.attack_rate = 35
+            self.attack_damage = 20
         elif tower_type == 4:
             self.image = pygame.image.load("Assets/miro_tower.jpeg")
             self.image = pygame.transform.scale(self.image, (40,40))
             self.cost = 400
-            self.range = 400
-            self.attack_rate = 100
-            self.attack_damage = 130
+            self.range = 200
+            self.attack_rate = 35
+            self.attack_damage = 25
         elif tower_type == 5:
             self.image = pygame.image.load("Assets/jason_tower.jpeg")
             self.image = pygame.transform.scale(self.image, (40, 40))
-            self.cost = 500
+            self.cost = 3000
             self.range = 500
-            self.attack_rate = 3
-            self.attack_damage = 200
+            self.attack_rate = 20
+            self.attack_damage = 35
         # sets position centered on rectangle
         self.rect = self.image.get_rect(center=position)
 
@@ -112,15 +112,18 @@ class TowerManager:
 
     # is_tower_placeable asks if the tower can be placed at current mouse location given bounds of the path
     def is_tower_placeable(self, tower_rect):
-        # create a mask for the tower
+        # Check collision with path
         tower_mask = pygame.mask.from_surface(self.the_tower.image)
         tower_offset = tower_rect.topleft
-
-        # check if tower and path overlap.
         if self.path_mask.overlap(tower_mask, tower_offset):
             return False
 
-        # check if the tower is on the screen
+        # Check collision with other towers
+        for tower in self.towers:
+            if tower.rect.colliderect(tower_rect):
+                return False
+
+        # Check if tower is within screen bounds
         screen_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
         return screen_rect.contains(tower_rect)
 
@@ -129,9 +132,6 @@ class TowerManager:
         mouse_position = pygame.mouse.get_pos()
         self.the_tower = Tower(mouse_position, tower_type)
 
-    # using the euclidean distance formula between two points return value -- pygame.math has a function for this
-    def distance_to_point(self, pointA, pointB):
-        return sqrt((pointA[0] - pointB[0]) ** 2 + (pointA[1] - pointB[1]) ** 2)
 
     # manage the new tower being placed by following the mouse cursor
     def update(self):
@@ -147,7 +147,11 @@ class TowerManager:
         if self.the_tower:
             self.the_tower.draw(screen)
 
-            range_color = (255, 255, 255, 100)
+            if self.is_tower_placeable(self.the_tower.rect):
+                range_color = (255, 255, 255, 100)  # White when valid
+            else:
+                range_color = (255, 0, 0, 100)  # Red when invalid
+
             range_surface = pygame.Surface((self.the_tower.range * 2, self.the_tower.range * 2), pygame.SRCALPHA)
             pygame.draw.circle(range_surface, range_color, (self.the_tower.range, self.the_tower.range), self.the_tower.range)
             screen.blit(range_surface, (self.the_tower.rect.centerx - self.the_tower.range, self.the_tower.rect.centery - self.the_tower.range))
@@ -156,15 +160,15 @@ class TowerManager:
             bullet = self.bullets_to_render.pop(0)
             bullet_type = self.towers[bullet[1]].get_type()
             if bullet_type == 1:
-                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width=10)
+                pygame.draw.line(screen, (128, 30, 232), self.towers[bullet[1]].get_position(), bullet[0], width = 3)
             elif bullet_type == 2:
-                pygame.draw.line(screen, (255, 255, 0), self.towers[bullet[1]].get_position(), bullet[0], width=3)
+                pygame.draw.line(screen, (255, 255, 0), self.towers[bullet[1]].get_position(), bullet[0], width = 4)
             elif bullet_type == 3:
-                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width=7)
+                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width = 6)
             elif bullet_type == 4:
-                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width=3)
+                pygame.draw.line(screen, (30, 229, 247), self.towers[bullet[1]].get_position(), bullet[0], width= 8)
             elif bullet_type == 5:
-                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width=40)
+                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width= 11)
 
 
 
