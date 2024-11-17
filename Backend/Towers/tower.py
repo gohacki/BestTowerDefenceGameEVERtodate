@@ -146,9 +146,10 @@ class TowerManager:
 
         if self.the_tower:
             self.the_tower.draw(screen)
-
+            # display range of the tower as translucent either white or red according to validity
             if self.is_tower_placeable(self.the_tower.rect):
                 range_color = (255, 255, 255, 100)  # White when valid
+
             else:
                 range_color = (255, 0, 0, 100)  # Red when invalid
 

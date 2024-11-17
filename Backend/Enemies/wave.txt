@@ -8,3 +8,7 @@ fast
 100
 strong
 500
+default
+200
+default
+600
