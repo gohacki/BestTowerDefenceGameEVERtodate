@@ -8,6 +8,8 @@ class Tower:
     def __init__(self, position, tower_type):
         self.tower_type = tower_type
         self.position = position
+        # store a value for home tower position so that you can deselect tower
+        self.home_position = position
         # self.image = pygame.Surface((40, 40))
         self.frames_since_attack = 0
         if tower_type == 1:
@@ -107,8 +109,20 @@ class TowerManager:
                     self.selected_tower_type = None
                 else:
                     self.game_manager.set_notification("Not enough gold!")
+
             else:
                 print("Cannot place tower here!")
+
+        ## TODO edit these
+        elif event.type == pygame.MOUSEBUTTONUP and self.the_tower:
+            # Check if the tower is back to its home position
+            mouse_position = pygame.mouse.get_pos()
+            distance_to_home = sqrt((mouse_position[0] - self.the_tower.home_position[0]) ** 2 +
+                                    (mouse_position[1] - self.the_tower.home_position[1]) ** 2)
+            if distance_to_home < 20:  # Threshold for snapping back
+                self.the_tower = None
+                self.selected_tower_type = None
+
 
     # is_tower_placeable asks if the tower can be placed at current mouse location given bounds of the path
     def is_tower_placeable(self, tower_rect):
