@@ -1,0 +1,12 @@
+slow
+300
+slow
+1000
+default
+250
+default
+1500
+fast
+300
+fast
+300

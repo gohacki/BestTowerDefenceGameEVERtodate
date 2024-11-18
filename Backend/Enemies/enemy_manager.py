@@ -1,11 +1,12 @@
-from .enemy import Enemy
-## from .Towers.tower import TowerManager
+from enemy import Enemy
+
 
 # Create a list of enemies for the manager to use
-def generate_wave(canvas, checkpoints):
+def generate_wave(canvas, checkpoints, round_num):
     wave = []
     spawn_delays = []
-    infile = open("Backend/Enemies/wave.txt", "r")
+    filename = "Waves/wave" + str(round_num) + ".txt"
+    infile = open(filename, "r")
     # Just grab all the text from our file
     raw_text = infile.readlines()
     infile.close()
@@ -43,7 +44,7 @@ class EnemyManager:
         self.spawn_counter = 0
         # Counter to check if it's time to spawn an enemy yet; start at full
         self.timer_counter = self.current_spawn_target
-        self.wave, self.spawn_targets = generate_wave(canvas, checkpoints)
+        self.wave, self.spawn_targets = generate_wave(canvas, checkpoints, 10)
 
     # Moves all enemies towards next checkpoints, and sometimes spawns new ones
     # Returns True if an enemy reaches the end of the map

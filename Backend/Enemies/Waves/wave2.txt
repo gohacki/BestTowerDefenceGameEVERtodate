@@ -1,0 +1,10 @@
+default
+150
+default
+150
+default
+150
+default
+2000
+fast
+100

@@ -1,0 +1,8 @@
+slow
+500
+slow
+500
+slow
+500
+slow
+500
