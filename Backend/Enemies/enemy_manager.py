@@ -54,6 +54,8 @@ class EnemyManager:
         self.wave_timer = self.wave_delay
         # How many waves to spawn
         self.MAX_WAVE = 10
+        # Tracks if we're done spawning enemies
+        self.waves_completed = False
 
     # Moves all enemies towards next checkpoints, and sometimes spawns new ones
     # Returns True if an enemy reaches the end of the map
@@ -95,6 +97,11 @@ class EnemyManager:
                 self.enemies.remove(enemy)
                 return True
 
+        # Check for game over
+        if self.wave_counter >= self.MAX_WAVE:
+            if len(self.enemies) == 0:
+                self.waves_completed = True
+
     # Draws all enemies on the screen
     def render(self, screen):
         # Draw all spawned enemies
@@ -133,3 +140,6 @@ class EnemyManager:
         if id >= len(self.enemies):
             return 0
         self.enemies[id].freeze(time)
+
+    def get_waves_completed(self):
+        return self.waves_completed
