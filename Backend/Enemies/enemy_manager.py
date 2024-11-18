@@ -49,7 +49,7 @@ class EnemyManager:
         # Tracks which wave we're on
         self.wave_counter = 1
         # How long to wait between waves
-        self.wave_delay = 10000
+        self.wave_delay = 15000
         # Counter to check if the next wave should start yet
         self.wave_timer = self.wave_delay
         # How many waves to spawn
