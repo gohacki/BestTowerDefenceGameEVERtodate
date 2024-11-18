@@ -1,11 +1,11 @@
-from enemy import Enemy
+from Backend.Enemies.enemy import Enemy
 
 
 # Create a list of enemies for the manager to use
 def generate_wave(canvas, checkpoints, round_num):
     wave = []
     spawn_delays = []
-    filename = "Waves/wave" + str(round_num) + ".txt"
+    filename = "Backend/Enemies/Waves/wave" + str(round_num) + ".txt"
     infile = open(filename, "r")
     # Just grab all the text from our file
     raw_text = infile.readlines()
