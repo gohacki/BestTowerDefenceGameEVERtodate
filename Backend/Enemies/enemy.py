@@ -27,17 +27,17 @@ class Enemy:
             case "default":
                 self.health = 100
                 self.speed = 4
-                self.sprite = pygame.image.load("../../Assets/Solid_red.png")
+                self.sprite = pygame.image.load("Assets/Solid_red.png")
             # Slow but high health
             case "slow":
                 self.health = 300
                 self.speed = 6
-                self.sprite = pygame.image.load("../../Assets/Dark_green.PNG")
+                self.sprite = pygame.image.load("Assets/Dark_green.PNG")
             # Fast but low health
             case "fast":
                 self.health = 50
                 self.speed = 2
-                self.sprite = pygame.image.load("../../Assets/Light_blue.png")
+                self.sprite = pygame.image.load("Assets/Light_blue.png")
             # Pretty good speed and health
             case "strong":
                 self.health = 400
