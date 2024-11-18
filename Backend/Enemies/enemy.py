@@ -17,6 +17,10 @@ class Enemy:
         self.counter = 0
         # Tracks if it has reached the last checkpoint
         self.reached_end = False
+        # Just for the freeze mechanic
+        self.is_frozen = False
+        self.freeze_time = 0
+        self.thaw_timer = 0
 
         match enemy_type:
             # Bog-standard enemy
@@ -59,6 +63,13 @@ class Enemy:
             return True
         return False
 
+    def freeze(self, time):
+        self.is_frozen = True
+        self.freeze_time = time
+
+    def get_is_frozen(self):
+        return self.is_frozen
+
     # Place the enemy visually on the screen
     def draw(self):
         # Draw sprite on canvas
@@ -68,6 +79,13 @@ class Enemy:
     def advance(self):
         # Increment frame tracker
         self.counter += 1
+        # Handle freeze mechanic; I put it here because it's doing that instead of moving, I suppose
+        if self.is_frozen:
+            # If it's ready to thaw out
+            if self.thaw_timer < self.freeze_time:
+                self.is_frozen = False
+            self.thaw_timer += 1
+
         # If it's time to move
         if self.counter == self.speed:
             # X value of next checkpoint

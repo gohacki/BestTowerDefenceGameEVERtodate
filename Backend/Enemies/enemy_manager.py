@@ -87,7 +87,9 @@ class EnemyManager:
 
         # Advance all spawned enemies
         for enemy in self.enemies:
-            enemy.advance()
+            # Check if it's frozen
+            if not enemy.get_is_frozen():
+                enemy.advance()
             # Eliminate if it reaches the last checkpoint
             if enemy.has_reached_goal():
                 self.enemies.remove(enemy)
@@ -112,8 +114,8 @@ class EnemyManager:
 
         return positions
 
-    # Processes damage on a given enemy NOTE: returns 0 if enemy does not exist, returns 1 if enemy damaged,
-    # returns 2 if enemy killed
+    # Processes damage on a given enemy
+    # NOTE: returns 0 if enemy does not exist, returns 1 if enemy damaged, returns 2 if enemy killed
     def deal_damage(self, id, damage):
         # Check to make sure that the enemy we intend to damage actually exists
         if id >= len(self.enemies):
@@ -125,3 +127,9 @@ class EnemyManager:
             return 2
         else:
             return 1
+
+    def freeze(self, id, time):
+        # Check to make sure that the enemy we intend to freeze actually exists
+        if id >= len(self.enemies):
+            return 0
+        self.enemies[id].freeze(time)
