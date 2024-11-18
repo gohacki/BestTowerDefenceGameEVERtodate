@@ -32,6 +32,8 @@ def generate_wave(canvas, checkpoints, round_num):
 # Just used as a translator between GameManager and Enemy
 class EnemyManager:
     def __init__(self, canvas, checkpoints):
+        self.canvas = canvas
+        self.checkpoints = checkpoints
         # List of enemies currently spawned
         self.enemies = []
         # List of all enemies in the current wave
@@ -39,28 +41,49 @@ class EnemyManager:
         # The spawn delay for each enemy
         self.spawn_targets = []
         # Delay for next enemy to be spawned
-        self.current_spawn_target = 0
+        self.current_spawn_delay = 0
         # Used to track how many enemies we've created so far
         self.spawn_counter = 0
         # Counter to check if it's time to spawn an enemy yet; start at full
-        self.timer_counter = self.current_spawn_target
-        self.wave, self.spawn_targets = generate_wave(canvas, checkpoints, 10)
+        self.enemy_timer = self.current_spawn_delay
+        # Tracks which wave we're on
+        self.wave_counter = 1
+        # How long to wait between waves
+        self.wave_delay = 10000
+        # Counter to check if the next wave should start yet
+        self.wave_timer = self.wave_delay
+        # How many waves to spawn
+        self.MAX_WAVE = 10
 
     # Moves all enemies towards next checkpoints, and sometimes spawns new ones
     # Returns True if an enemy reaches the end of the map
     def update(self):
-        # If not all have been spawned
+        # NOTE: THIS FIRST BLOCK OF CODE IS KIND OF HACKY
+        # I'M NOT SURE WHAT WILL HAPPEN IF ONE WAVE SPAWNS WHILE ANOTHER IS STILL ON-SCREEN
+        # If not all waves have been spawned
+        if self.wave_counter < self.MAX_WAVE:
+            # If it's time to spawn a new wave, do so and reset timer
+            if self.wave_timer == self.wave_delay:
+                self.wave, self.spawn_targets = generate_wave(self.canvas, self.checkpoints, self.wave_counter)
+                self.wave_counter += 1
+                self.wave_timer = 0
+                # We also need to reset how many enemies have been spawned
+                self.spawn_counter = 0
+            # Otherwise, increment timer
+            self.wave_timer += 1
+
+        # If not all enemies have been spawned
         if self.spawn_counter < len(self.wave):
             # If it's time to spawn a new one, reset timer and do so
-            if self.timer_counter == self.current_spawn_target:
+            if self.enemy_timer == self.current_spawn_delay:
                 # Pull a new enemy from the wave
                 self.enemies.append(self.wave[self.spawn_counter])
                 # Grab next timer target
-                self.current_spawn_target = self.spawn_targets[self.spawn_counter]
+                self.current_spawn_delay = self.spawn_targets[self.spawn_counter]
                 self.spawn_counter += 1
-                self.timer_counter = 0
+                self.enemy_timer = 0
             # Otherwise, increment timer
-            self.timer_counter += 1
+            self.enemy_timer += 1
 
         # Advance all spawned enemies
         for enemy in self.enemies:
