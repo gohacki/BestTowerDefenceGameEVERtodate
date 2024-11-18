@@ -11,10 +11,6 @@ class Enemy:
         self.pos_x = checkpoints[0][0]
         # Current y position, starts at first checkpoint by default
         self.pos_y = checkpoints[0][1]
-        # The thing to be drawn on canvas; currently a rectangle, to be changed later
-        self.sprite = pygame.Rect(checkpoints[0][0], checkpoints[0][1], 20, 20)
-        # Color of rectangle
-        self.color = (200, 0, 0)
         # Checkpoint counter, used to track where the enemy is going
         self.curr_checkpoint = 1
         # Used to track when the next movement should occur
@@ -27,20 +23,25 @@ class Enemy:
             case "default":
                 self.health = 100
                 self.speed = 4
+                self.sprite = pygame.image.load("../../Assets/Solid_red.png")
             # Slow but high health
             case "slow":
                 self.health = 300
                 self.speed = 6
+                self.sprite = pygame.image.load("../../Assets/Dark_green.PNG")
             # Fast but low health
             case "fast":
                 self.health = 50
                 self.speed = 2
+                self.sprite = pygame.image.load("../../Assets/Light_blue.png")
             # Pretty good speed and health
             case "strong":
                 self.health = 400
                 self.speed = 3
+                self.sprite = pygame.image.load("../../Assets/Solid_yellow.png")
 
-
+        # Set sprite as correct size
+        self.sprite = pygame.transform.scale(self.sprite, (20, 20))
 
     def get_x(self):
         return self.pos_x
@@ -61,7 +62,7 @@ class Enemy:
     # Place the enemy visually on the screen
     def draw(self):
         # Draw sprite on canvas
-        pygame.draw.rect(self.canvas, self.color, self.sprite)
+        self.canvas.blit(self.sprite, (self.pos_x, self.pos_y))
 
     # Advances 1 pixel towards the next checkpoint once every x times it's called, with x = speed
     def advance(self):
@@ -99,8 +100,6 @@ class Enemy:
                         self.curr_checkpoint -= 1
                         self.reached_end = True
 
-            # Modify sprite
-            self.sprite = pygame.Rect(self.pos_x, self.pos_y, 20, 20)
             # Reset frame counter
             self.counter = 0
     
