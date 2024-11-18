@@ -107,7 +107,7 @@ class GameManager:
             # check to see of the user still has health, and then change state accordingly
             if self.user_health <= 0:
                 self.state = "lose"
-            elif not self.enemy_manager.enemies and self.enemy_manager.spawn_counter >= self.enemy_manager.spawn_target:
+            elif not self.enemy_manager.enemies and self.enemy_manager.spawn_counter >= len(self.enemy_manager.spawn_targets):
                 self.state = "win"
 
     # render is responsible for the current state of the game that the user is in
@@ -173,10 +173,18 @@ class GameManager:
             image_rect = image.get_rect(center = rect.center)
             self.screen.blit(image, image_rect)
 
+            # display the names of each tower
             names = ["Allison", "Eve", "Jasper", "Miro", "Jason"]
             tower_label = self.font.render(f"{names[tower_type-1]}", True, (255, 255, 255))
             label_rect = tower_label.get_rect(center=(rect.centerx, rect.bottom + 15))
             self.screen.blit(tower_label, label_rect)
+
+            # display the price of each tower
+            price = ["đ 100", "đ 200", "đ 300", "đ 400", "đ 3000"]
+            tower_cost = self.font.render(f"{price[tower_type - 1]}", True, (255, 255, 255))
+            cost_rect = tower_cost.get_rect(center=(rect.centerx, rect.bottom + 38))
+            self.screen.blit(tower_cost, cost_rect)
+
 
     # position the towers within the screen
     def create_tower_buttons(self):
@@ -216,7 +224,7 @@ class GameManager:
         health_text = self.font.render(f"Health: {self.user_health}", True, (255, 255, 255))
         self.screen.blit(health_text, (10, 10))
         # Display gold currency
-        currency_text = self.font.render(f"Gold Dabloons: {self.currency}", True, (255, 255, 0))
+        currency_text = self.font.render(f"Golden Dabloon: đ{self.currency}", True, (255, 255, 0))
         self.screen.blit(currency_text, (10, 50))
         self.render_tower_selection_ui()
         if self.notification:
