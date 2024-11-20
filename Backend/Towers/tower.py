@@ -12,6 +12,8 @@ class Tower:
         self.home_position = position
         # self.image = pygame.Surface((40, 40))
         self.frames_since_attack = 0
+
+        # Based on each tower type assign an image a tower cost, attack rate,range and damage accordingly.
         if tower_type == 1:
             self.image = pygame.image.load("Assets/allison_tower.jpg")
             self.image = pygame.transform.scale(self.image, (40,40))
@@ -47,36 +49,40 @@ class Tower:
             self.range = 500
             self.attack_rate = 20
             self.attack_damage = 35
-        # sets position centered on rectangle
+        # sets each position centered on the bottom left rectangle
         self.rect = self.image.get_rect(center=position)
 
-        # TODO
+        # This labels the given possible updates that the user can enact on a given tower
         self.upgrades = {
-            "path_a": 0, 
-            "path_b": 0
+            "damage/speed": 0,
+            "range": 0
         }
 
+        # only let the levels go up to 5
         self.max_upgrade_level = 5
-
+        # set given costs per each of the updates
         self.upgrade_costs = {
-            "path_a": 50,
-            "path_b": 75
+            "damage/speed": 50,
+            "range": 75
         }
 
-    # TODO add comments
-    def apply_upgrade(self, path):
-        if path not in self.upgrades:
+    # This allows us to upgrade each of the placed towers as needed
+    def apply_upgrade(self, upgrade):
+        if upgrade not in self.upgrades:
             return False
 
-        if self.upgrades[path] >= self.max_upgrade_level:
+        if self.upgrades[upgrade] >= self.max_upgrade_level:
             return False
 
-        if path == "path_a":
+        # if user selects to increase the damage and speed of the tower implement additions
+        if upgrade == "damage/speed":
             self.attack_damage += 1
             self.attack_rate = max(5, self.attack_rate - 5)
-        elif path == "path_b":
+        # else if the user selects to increase the range, implement that
+        elif upgrade == "range":
             self.range += 10
-        self.upgrades[path] += 1
+        # store the updated level number as +=1
+        self.upgrades[upgrade] += 1
         return True
 
     # draw depicts the tower on the screen
@@ -104,7 +110,7 @@ class Tower:
         return self.position
 
 
-# TowerManager Class handles pressing of keys and mouse movement to place towers
+# TowerManager Class handles pressing of keys and mouse movement in order to place towers
 class TowerManager:
     # initialize towers to be a list of set towers
     def __init__(self, screen, enemy_path, game_manager, path_mask):
@@ -118,23 +124,28 @@ class TowerManager:
         # initialize path that towers cannot be placed on
         self.path_mask = path_mask
         self.bullets_to_render = []
-        self.selected_tower = None  
+        self.selected_tower = None
 
     # handle_event responds to user interaction such as pressing keys or moving/clicking the mouse
     def handle_event(self, event):
+        # if the escape key is pushed while at a tower
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE and self.the_tower:
-                # Unselect the current tower
+                # unselect the current tower
                 self.the_tower = None
                 self.selected_tower_type = None
+        # if the mouse is pressed down enable placement or selection of given tower
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            # if user has selected a tower and wants to potentially place it
             if self.the_tower:
+                # ensure that the tower can be placed according to bounds of map
                 if self.is_tower_placeable(self.the_tower.rect):
                     tower_cost = self.the_tower.cost
+                    # ensure user has enough dabloons to place tower
                     if self.game_manager.currency >= tower_cost:
                         self.game_manager.currency -= tower_cost
                         self.towers.append(self.the_tower)
-                        # This fixed the issue, tower position was only being set when the user first clicked on the tower.
+                        # This fixes issue of - tower position only being set when the user first clicked on the tower.
                         self.the_tower.position = self.the_tower.rect.center
                         self.the_tower = None
                         self.selected_tower_type = None
@@ -144,10 +155,12 @@ class TowerManager:
                 else:
                     self.game_manager.set_notification("Cannot place tower here!")
 
-            # TODO add comments
+            # if there is no tower being placed, take into account for upgrades
             else:
                 mouse_pos = pygame.mouse.get_pos()
+                # loop through all the towers
                 for tower in self.towers:
+                    # if mouse is hovering and selecting a given tower pass into selection funciton
                     if tower.rect.collidepoint(mouse_pos):
                         self.selected_tower = tower
                         self.game_manager.set_selected_tower(tower)
@@ -155,7 +168,7 @@ class TowerManager:
                 self.selected_tower = None
                 self.game_manager.set_selected_tower(None)
 
-        ## TODO edit these
+        # if the tower is selected and you want to drop it off back at home instead of placing it
         elif event.type == pygame.MOUSEBUTTONUP and self.the_tower:
             mouse_position = pygame.mouse.get_pos()
             distance_to_home = sqrt((mouse_position[0] - self.the_tower.home_position[0]) ** 2 +
@@ -169,21 +182,22 @@ class TowerManager:
 
     # is_tower_placeable asks if the tower can be placed at current mouse location given bounds of the path
     def is_tower_placeable(self, tower_rect):
-        # Check collision with path
+        # check to see if the tower is overlapping the given path
         tower_mask = pygame.mask.from_surface(self.the_tower.image)
         tower_offset = tower_rect.topleft
         if self.path_mask.overlap(tower_mask, tower_offset):
             return False
 
-        # Check collision with other towers
+        # check to see if the tower is overlapping with any other placed towers
         for tower in self.towers:
             if tower.rect.colliderect(tower_rect):
                 return False
 
-        # Check if tower is within screen bounds
+        # check to ensure that the tower is still on the playable screen
         screen_rect = pygame.Rect(0, 0, self.screen_width, self.screen_height)
         return screen_rect.contains(tower_rect)
 
+    # set a selected tower to be "the_tower"
     def select_tower(self, tower_type):
         self.selected_tower_type = tower_type
         mouse_position = pygame.mouse.get_pos()
@@ -200,24 +214,26 @@ class TowerManager:
     def render(self, screen):
         for tower in self.towers:
             tower.draw(screen)
-        
-        # highlight the selected tower
+
+        # highlight the selected tower and its corresponding range
         if self.selected_tower:
             pygame.draw.circle(screen, (0, 255, 0), self.selected_tower.position, self.selected_tower.range, 2)
 
+        # render the tower that is being placed and its potential conflicts with the path
         if self.the_tower:
             self.the_tower.draw(screen)
             # display range of the tower as translucent either white or red according to validity
             if self.is_tower_placeable(self.the_tower.rect):
-                range_color = (255, 255, 255, 100)  # White when valid
+                range_color = (255, 255, 255, 100)  # white color when valid
 
             else:
-                range_color = (255, 0, 0, 100)  # Red when invalid
+                range_color = (255, 0, 0, 100)  # red to show it is invalid
 
             range_surface = pygame.Surface((self.the_tower.range * 2, self.the_tower.range * 2), pygame.SRCALPHA)
             pygame.draw.circle(range_surface, range_color, (self.the_tower.range, self.the_tower.range), self.the_tower.range)
             screen.blit(range_surface, (self.the_tower.rect.centerx - self.the_tower.range, self.the_tower.rect.centery - self.the_tower.range))
 
+        # this displays bullets from each type of tower according to tower/bullet type
         while self.bullets_to_render:
             bullet = self.bullets_to_render.pop(0)
             bullet_type = self.towers[bullet[1]].get_type()

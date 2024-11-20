@@ -31,9 +31,8 @@ class GameManager:
         self.enemy_manager = EnemyManager(self.screen, self.enemy_path)
         self.user_health = 100
         self.currency = 1000
-        
 
-        # create a dictionary for the tower selection process
+        # create a dictionary for the tower selection process and image loading
         self.tower_images = {
             1: pygame.transform.scale(pygame.image.load("Assets/allison_tower.jpg"), (40,40)),
             2: pygame.transform.scale(pygame.image.load("Assets/eve_tower.jpeg"), (40, 40)),
@@ -46,12 +45,13 @@ class GameManager:
         self.paused = False
 
         self.selected_tower = None  # selected tower for upgrades
-        self.font_small = pygame.font.Font(None, 24)
+        self.font_small = pygame.font.Font(None, 24) # font for the upgrade window
 
+        # create upgrade buttons
         self.upgrade_button_size = (100, 50)
         self.upgrade_buttons = {
-            "path_a": pygame.Rect(0, 0, *self.upgrade_button_size),
-            "path_b": pygame.Rect(0, 0, *self.upgrade_button_size)
+            "damage/speed": pygame.Rect(0, 0, *self.upgrade_button_size),
+            "range": pygame.Rect(0, 0, *self.upgrade_button_size)
         }
 
     # Handle possible user inputs and call to each state of game play
@@ -67,6 +67,7 @@ class GameManager:
                 return  # Don't process further events when toggling pause
 
         if self.state == "start":
+            # if in start screen and user presses enter it will change to playing state
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 self.state = "playing"
 
@@ -75,23 +76,26 @@ class GameManager:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
 
-                # TODO add comments
+                # if any tower is selected and then upgrade button is clicked
                 if self.selected_tower:
                     for path, button_rect in self.upgrade_buttons.items():
                         if button_rect.collidepoint(mouse_pos):
                             self.handle_upgrade_purchase(path)
                             return
-                
+
+                # if the pause button is clicked
                 if self.pause_button_rect.collidepoint(mouse_pos):
                     self.paused = not self.paused
                     return
-                # check if a tower button was clicked
+
+                # check if a tower button was clicked, select it for placement
                 for rect, tower_type in self.tower_buttons:
                     if rect.collidepoint(mouse_pos):
                         self.tower_manager.select_tower(tower_type)
                         return  # exit early to avoid unselecting the tower immediately
             self.tower_manager.handle_event(event)
 
+        # allow user to restart in win and lose states
         elif self.state in ("win", "lose"):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                 self.reset_game()
@@ -105,7 +109,7 @@ class GameManager:
             enemy_positions = self.enemy_manager.get_positions()
             goal_x, goal_y = self.enemy_path[-1]
 
-            # evaluate to see if the enemies have reached all the way to the goal
+            # evaluate to see if the enemies have reached all the way to the end goal
             enemies_reached_goal = []
             for pos in enemy_positions:
                 enemy_x = pos["enemy_x"]
@@ -153,26 +157,30 @@ class GameManager:
 
         pygame.display.flip()
 
-    # TODO add comments
+    # allows currently selected tower to get upgraded
     def set_selected_tower(self, tower):
         self.selected_tower = tower
         if tower:
+            # display the upgrade window as needed
             self.upgrade_menu_position = (tower.position[0] + 50, tower.position[1] - 50)
         else:
             self.upgrade_menu_position = (0, 0)
 
+    # if the user wishes to upgrade a give tower
     def handle_upgrade_purchase(self, path):
         tower = self.selected_tower
         if not tower:
             return
         upgrade_costs = {
-            "path_a": tower.upgrade_costs.get(path, 50),
-            "path_b": tower.upgrade_costs.get(path, 75)
+            "damage/speed": tower.upgrade_costs.get(path, 50),
+            "range": tower.upgrade_costs.get(path, 75)
         }
         cost = upgrade_costs.get(path, 0)
+        # if the tower is at the max upgrade level do not let it update anymore
         if tower.upgrades.get(path, 0) >= tower.max_upgrade_level:
             self.set_notification(f"{path.replace('_', ' ').title()} is already at max level!")
             return
+        # if the player has enought dabloons to go through with the update
         if self.currency >= cost:
             if tower.apply_upgrade(path):
                 self.currency -= cost
@@ -300,24 +308,24 @@ class GameManager:
         pygame.draw.rect(self.screen, (50, 50, 50), menu_rect)
         pygame.draw.rect(self.screen, (255, 255, 255), menu_rect, 2)
 
-        self.upgrade_buttons["path_a"].topleft = (menu_x + 10, menu_y + 10)
-        self.upgrade_buttons["path_b"].topleft = (menu_x + 120, menu_y + 10)
+        self.upgrade_buttons["damage/speed"].topleft = (menu_x + 10, menu_y + 10)
+        self.upgrade_buttons["range"].topleft = (menu_x + 120, menu_y + 10)
 
-        pygame.draw.rect(self.screen, (0, 0, 255), self.upgrade_buttons["path_a"])
-        text_a = self.font_small.render("Upgrade A", True, (255, 255, 255))
-        text_rect_a = text_a.get_rect(center=self.upgrade_buttons["path_a"].center)
+        pygame.draw.rect(self.screen, (0, 0, 255), self.upgrade_buttons["damage/speed"])
+        text_a = self.font_small.render("Speed", True, (255, 255, 255))
+        text_rect_a = text_a.get_rect(center=self.upgrade_buttons["damage/speed"].center)
         self.screen.blit(text_a, text_rect_a)
 
-        pygame.draw.rect(self.screen, (255, 0, 0), self.upgrade_buttons["path_b"])
-        text_b = self.font_small.render("Upgrade B", True, (255, 255, 255))
-        text_rect_b = text_b.get_rect(center=self.upgrade_buttons["path_b"].center)
+        pygame.draw.rect(self.screen, (255, 0, 0), self.upgrade_buttons["range"])
+        text_b = self.font_small.render("Range", True, (255, 255, 255))
+        text_rect_b = text_b.get_rect(center=self.upgrade_buttons["range"].center)
         self.screen.blit(text_b, text_rect_b)
 
-        level_a = self.selected_tower.upgrades.get("path_a", 0)
+        level_a = self.selected_tower.upgrades.get("damage/speed", 0)
         level_a_text = self.font_small.render(f"Level A: {level_a}", True, (255, 255, 255))
         self.screen.blit(level_a_text, (menu_x + 10, menu_y + 70))
 
-        level_b = self.selected_tower.upgrades.get("path_b", 0)
+        level_b = self.selected_tower.upgrades.get("range", 0)
         level_b_text = self.font_small.render(f"Level B: {level_b}", True, (255, 255, 255))
         self.screen.blit(level_b_text, (menu_x + 120, menu_y + 70))
 
