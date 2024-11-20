@@ -1,6 +1,6 @@
 import pygame
 from math import sqrt
-
+# does this work
 
 # Tower Class allowing tower objects to be placed on the screen
 class Tower:
@@ -50,6 +50,35 @@ class Tower:
         # sets position centered on rectangle
         self.rect = self.image.get_rect(center=position)
 
+        # TODO
+        self.upgrades = {
+            "path_a": 0, 
+            "path_b": 0
+        }
+
+        self.max_upgrade_level = 5
+
+        self.upgrade_costs = {
+            "path_a": 50,
+            "path_b": 75
+        }
+
+    # TODO add comments
+    def apply_upgrade(self, path):
+        if path not in self.upgrades:
+            return False
+
+        if self.upgrades[path] >= self.max_upgrade_level:
+            return False
+
+        if path == "path_a":
+            self.attack_damage += 1
+            self.attack_rate = max(5, self.attack_rate - 5)
+        elif path == "path_b":
+            self.range += 10
+        self.upgrades[path] += 1
+        return True
+
     # draw depicts the tower on the screen
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -89,6 +118,7 @@ class TowerManager:
         # initialize path that towers cannot be placed on
         self.path_mask = path_mask
         self.bullets_to_render = []
+        self.selected_tower = None  
 
     # handle_event responds to user interaction such as pressing keys or moving/clicking the mouse
     def handle_event(self, event):
@@ -97,31 +127,44 @@ class TowerManager:
                 # Unselect the current tower
                 self.the_tower = None
                 self.selected_tower_type = None
-        elif event.type == pygame.MOUSEBUTTONDOWN and self.the_tower:
-            if self.is_tower_placeable(self.the_tower.rect):
-                tower_cost = self.the_tower.cost
-                if self.game_manager.currency >= tower_cost:
-                    self.game_manager.currency -= tower_cost
-                    self.towers.append(self.the_tower)
-                    # This fixed the issue, tower position was only being set when the user first clicked on the tower.
-                    self.the_tower.position = self.the_tower.rect.center
-                    self.the_tower = None
-                    self.selected_tower_type = None
-                else:
-                    self.game_manager.set_notification("Not enough gold!")
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if self.the_tower:
+                if self.is_tower_placeable(self.the_tower.rect):
+                    tower_cost = self.the_tower.cost
+                    if self.game_manager.currency >= tower_cost:
+                        self.game_manager.currency -= tower_cost
+                        self.towers.append(self.the_tower)
+                        # This fixed the issue, tower position was only being set when the user first clicked on the tower.
+                        self.the_tower.position = self.the_tower.rect.center
+                        self.the_tower = None
+                        self.selected_tower_type = None
+                    else:
+                        self.game_manager.set_notification("Not enough gold!")
 
+                else:
+                    self.game_manager.set_notification("Cannot place tower here!")
+
+            # TODO add comments
             else:
-                print("Cannot place tower here!")
+                mouse_pos = pygame.mouse.get_pos()
+                for tower in self.towers:
+                    if tower.rect.collidepoint(mouse_pos):
+                        self.selected_tower = tower
+                        self.game_manager.set_selected_tower(tower)
+                        return
+                self.selected_tower = None
+                self.game_manager.set_selected_tower(None)
 
         ## TODO edit these
         elif event.type == pygame.MOUSEBUTTONUP and self.the_tower:
-            # Check if the tower is back to its home position
             mouse_position = pygame.mouse.get_pos()
             distance_to_home = sqrt((mouse_position[0] - self.the_tower.home_position[0]) ** 2 +
                                     (mouse_position[1] - self.the_tower.home_position[1]) ** 2)
-            if distance_to_home < 20:  # Threshold for snapping back
+            if distance_to_home < 20:
                 self.the_tower = None
                 self.selected_tower_type = None
+            else:
+                pass
 
 
     # is_tower_placeable asks if the tower can be placed at current mouse location given bounds of the path
@@ -157,6 +200,10 @@ class TowerManager:
     def render(self, screen):
         for tower in self.towers:
             tower.draw(screen)
+        
+        # highlight the selected tower
+        if self.selected_tower:
+            pygame.draw.circle(screen, (0, 255, 0), self.selected_tower.position, self.selected_tower.range, 2)
 
         if self.the_tower:
             self.the_tower.draw(screen)

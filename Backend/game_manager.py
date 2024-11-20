@@ -45,6 +45,15 @@ class GameManager:
         self.create_tower_buttons()
         self.paused = False
 
+        self.selected_tower = None  # selected tower for upgrades
+        self.font_small = pygame.font.Font(None, 24)
+
+        self.upgrade_button_size = (100, 50)
+        self.upgrade_buttons = {
+            "path_a": pygame.Rect(0, 0, *self.upgrade_button_size),
+            "path_b": pygame.Rect(0, 0, *self.upgrade_button_size)
+        }
+
     # Handle possible user inputs and call to each state of game play
     def handle_events(self, event):
         # if user wishes to quit exit the game
@@ -65,6 +74,13 @@ class GameManager:
             # if user pushes the mouse while in the playing state
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
+
+                # TODO add comments
+                if self.selected_tower:
+                    for path, button_rect in self.upgrade_buttons.items():
+                        if button_rect.collidepoint(mouse_pos):
+                            self.handle_upgrade_purchase(path)
+                            return
                 
                 if self.pause_button_rect.collidepoint(mouse_pos):
                     self.paused = not self.paused
@@ -126,6 +142,8 @@ class GameManager:
             self.render_ui()
             if self.paused:
                 self.render_pause_menu()
+            
+            self.render_upgrade_menu()
 
         elif self.state == "win":
             self.render_win_screen()
@@ -134,6 +152,35 @@ class GameManager:
             self.render_lose_screen()
 
         pygame.display.flip()
+
+    # TODO add comments
+    def set_selected_tower(self, tower):
+        self.selected_tower = tower
+        if tower:
+            self.upgrade_menu_position = (tower.position[0] + 50, tower.position[1] - 50)
+        else:
+            self.upgrade_menu_position = (0, 0)
+
+    def handle_upgrade_purchase(self, path):
+        tower = self.selected_tower
+        if not tower:
+            return
+        upgrade_costs = {
+            "path_a": tower.upgrade_costs.get(path, 50),
+            "path_b": tower.upgrade_costs.get(path, 75)
+        }
+        cost = upgrade_costs.get(path, 0)
+        if tower.upgrades.get(path, 0) >= tower.max_upgrade_level:
+            self.set_notification(f"{path.replace('_', ' ').title()} is already at max level!")
+            return
+        if self.currency >= cost:
+            if tower.apply_upgrade(path):
+                self.currency -= cost
+                self.set_notification(f"Upgraded {path.replace('_', ' ').title()} for đ{cost}")
+            else:
+                self.set_notification("Upgrade failed!")
+        else:
+            self.set_notification("Not enough gold for upgrade!")
 
     # star screen display and lettering along with instructions
     def render_start_screen(self):
@@ -240,6 +287,40 @@ class GameManager:
         label_rect = label.get_rect(center=self.pause_button_rect.center)
         self.screen.blit(label, label_rect)
 
+    # TODO add comments
+    def render_upgrade_menu(self):
+        if not self.selected_tower:
+            return
+
+        menu_x, menu_y = self.upgrade_menu_position
+
+        menu_width = 220
+        menu_height = 100
+        menu_rect = pygame.Rect(menu_x, menu_y, menu_width, menu_height)
+        pygame.draw.rect(self.screen, (50, 50, 50), menu_rect)
+        pygame.draw.rect(self.screen, (255, 255, 255), menu_rect, 2)
+
+        self.upgrade_buttons["path_a"].topleft = (menu_x + 10, menu_y + 10)
+        self.upgrade_buttons["path_b"].topleft = (menu_x + 120, menu_y + 10)
+
+        pygame.draw.rect(self.screen, (0, 0, 255), self.upgrade_buttons["path_a"])
+        text_a = self.font_small.render("Upgrade A", True, (255, 255, 255))
+        text_rect_a = text_a.get_rect(center=self.upgrade_buttons["path_a"].center)
+        self.screen.blit(text_a, text_rect_a)
+
+        pygame.draw.rect(self.screen, (255, 0, 0), self.upgrade_buttons["path_b"])
+        text_b = self.font_small.render("Upgrade B", True, (255, 255, 255))
+        text_rect_b = text_b.get_rect(center=self.upgrade_buttons["path_b"].center)
+        self.screen.blit(text_b, text_rect_b)
+
+        level_a = self.selected_tower.upgrades.get("path_a", 0)
+        level_a_text = self.font_small.render(f"Level A: {level_a}", True, (255, 255, 255))
+        self.screen.blit(level_a_text, (menu_x + 10, menu_y + 70))
+
+        level_b = self.selected_tower.upgrades.get("path_b", 0)
+        level_b_text = self.font_small.render(f"Level B: {level_b}", True, (255, 255, 255))
+        self.screen.blit(level_b_text, (menu_x + 120, menu_y + 70))
+
     def has_enemy_reached_goal(self, enemy_x, enemy_y, goal_x, goal_y):
         margin = 5
         if abs(enemy_x - goal_x) <= margin and abs(enemy_y - goal_y) <= margin:
@@ -252,6 +333,7 @@ class GameManager:
         self.currency = 1000
         self.enemy_manager = EnemyManager(self.screen, self.enemy_path)
         self.tower_manager = TowerManager(self.screen, self.enemy_path, self, self.map_manager.path_mask)
+        self.selected_tower = None
 
     def set_notification(self, message):
         self.notification = message
