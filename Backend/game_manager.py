@@ -58,6 +58,11 @@ class GameManager:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
 
+                # Check if pause button was clicked
+                if self.ui_manager.pause_button_rect.collidepoint(mouse_pos):
+                    self.paused = not self.paused
+                    return
+
                 # if any tower is selected and then upgrade button is clicked
                 if self.selected_tower:
                     for path, button_rect in self.ui_manager.upgrade_buttons.items():
@@ -131,7 +136,7 @@ class GameManager:
             self.tower_manager.render(self.screen)
 
             # Render UI
-            self.ui_manager.render_ui(self.user_health, self.currency)
+            self.ui_manager.render_ui(self.user_health, self.currency, self.paused)
 
             if self.paused:
                 self.ui_manager.render_pause_menu()

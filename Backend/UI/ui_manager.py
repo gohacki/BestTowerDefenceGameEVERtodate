@@ -72,7 +72,7 @@ class UIManager:
             self.screen.blit(tower_cost, cost_rect)
 
     # render the main UI elements
-    def render_ui(self, user_health, currency):
+    def render_ui(self, user_health, currency, paused):
         # Display health
         health_text = self.font.render(f"Health: {user_health}", True, (255, 255, 255))
         self.screen.blit(health_text, (10, 10))
@@ -90,7 +90,7 @@ class UIManager:
                 self.notification = ""
 
         pygame.draw.rect(self.screen, (50, 50, 50), self.pause_button_rect)  # Button background
-        label = self.font.render("Resume" if self.selected_tower else "Pause", True, (255, 255, 255))
+        label = self.font.render("Resume" if paused else "Pause", True, (255, 255, 255))
         label_rect = label.get_rect(center=self.pause_button_rect.center)
         self.screen.blit(label, label_rect)
 
