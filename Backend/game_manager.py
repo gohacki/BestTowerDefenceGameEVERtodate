@@ -135,8 +135,13 @@ class GameManager:
             self.enemy_manager.render(self.screen)
             self.tower_manager.render(self.screen)
 
-            # Render UI
-            self.ui_manager.render_ui(self.user_health, self.currency, self.paused)
+            # Retrieve current wave and countdown
+            current_wave = self.get_current_wave()
+            wave_countdown = self.get_wave_countdown()
+
+            # Pass wave information to UIManager
+            self.ui_manager.render_ui(self.user_health, self.currency, self.paused, current_wave, wave_countdown)
+
 
             if self.paused:
                 self.ui_manager.render_pause_menu()
@@ -230,3 +235,14 @@ class GameManager:
                         break
 
         self.tower_manager.prepare_attack_animations(bullets)
+
+    def get_current_wave(self):
+        return self.enemy_manager.wave_counter
+
+    def get_wave_countdown(self):
+        if self.enemy_manager.wave_counter < self.enemy_manager.MAX_WAVE:
+            remaining = self.enemy_manager.wave_delay - self.enemy_manager.wave_timer
+            remaining_seconds = max(0, remaining / 120)
+            return remaining_seconds
+        else:
+            return 0

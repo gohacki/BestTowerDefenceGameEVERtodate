@@ -72,13 +72,25 @@ class UIManager:
             self.screen.blit(tower_cost, cost_rect)
 
     # render the main UI elements
-    def render_ui(self, user_health, currency, paused):
+    def render_ui(self, user_health, currency, paused, current_wave, wave_countdown):
         # Display health
         health_text = self.font.render(f"Health: {user_health}", True, (255, 255, 255))
         self.screen.blit(health_text, (10, 10))
         # Display gold currency
         currency_text = self.font.render(f"Golden Dabloon: đ{currency}", True, (255, 255, 0))
         self.screen.blit(currency_text, (10, 50))
+
+        wave_text = self.font.render(f"Wave: {current_wave}", True, (255, 255, 255))
+        self.screen.blit(wave_text, (500, 10))
+
+        if wave_countdown > 0:
+            countdown_text = self.font.render(f"Next Wave In: {wave_countdown:.1f}s", True, (255, 255, 255))
+            self.screen.blit(countdown_text, (620, 10))
+        else:
+            completed_text = self.font.render("Final Wave!", True, (255, 255, 255))
+            self.screen.blit(completed_text, (620, 10)) 
+
+
         self.render_tower_selection_ui()
 
         if self.notification:
