@@ -5,6 +5,6 @@ default
 default
 150
 default
-2000
+800
 fast
 100

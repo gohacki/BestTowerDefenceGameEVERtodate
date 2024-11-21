@@ -42,7 +42,7 @@ class Enemy:
             case "strong":
                 self.health = 400
                 self.speed = 3
-                self.sprite = pygame.image.load("../../Assets/Solid_yellow.png")
+                self.sprite = pygame.image.load("Assets/Solid_yellow.png")
 
         # Set sprite as correct size
         self.sprite = pygame.transform.scale(self.sprite, (20, 20))

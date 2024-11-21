@@ -5,7 +5,7 @@ slow
 default
 250
 default
-1500
+500
 fast
 300
 fast

@@ -127,7 +127,7 @@ class GameManager:
             # check to see of the user still has health, and then change state accordingly
             if self.user_health <= 0:
                 self.state = "lose"
-            elif not self.enemy_manager.enemies and self.enemy_manager.spawn_counter >= len(self.enemy_manager.spawn_targets):
+            elif self.enemy_manager.waves_completed and not self.enemy_manager.enemies:
                 self.state = "win"
 
     # render is responsible for the current state of the game that the user is in
