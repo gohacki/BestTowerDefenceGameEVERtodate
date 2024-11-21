@@ -2,7 +2,6 @@ import pygame
 from math import sqrt
 from .tower import Tower
 
-
 # TowerManager Class handles pressing of keys and mouse movement in order to place towers
 class TowerManager:
     # initialize towers to be a list of set towers
@@ -16,7 +15,7 @@ class TowerManager:
         self.game_manager = game_manager
         # initialize path that towers cannot be placed on
         self.path_mask = path_mask
-        self.bullets_to_render = []
+        self.bullets = []
         self.selected_tower = None
 
     # handle_event responds to user interaction such as pressing keys or moving/clicking the mouse
@@ -103,6 +102,25 @@ class TowerManager:
             mouse_position = pygame.mouse.get_pos()
             self.the_tower.rect.center = mouse_position
 
+        # Update bullets
+        for bullet in self.bullets[:]:
+            # Move bullet towards target
+            dx = bullet['target_pos'][0] - bullet['current_pos'][0]
+            dy = bullet['target_pos'][1] - bullet['current_pos'][1]
+            distance = sqrt(dx**2 + dy**2)
+            if distance != 0:
+                dx /= distance
+                dy /= distance
+            speed = 10  # pixels per frame
+            bullet['current_pos'] = (bullet['current_pos'][0] + dx * speed, bullet['current_pos'][1] + dy * speed)
+
+            # Check if bullet has reached or passed the target
+            if ((dx >= 0 and bullet['current_pos'][0] >= bullet['target_pos'][0]) or
+                (dx < 0 and bullet['current_pos'][0] <= bullet['target_pos'][0])) and \
+               ((dy >= 0 and bullet['current_pos'][1] >= bullet['target_pos'][1]) or
+                (dy < 0 and bullet['current_pos'][1] <= bullet['target_pos'][1])):
+                self.bullets.remove(bullet)
+
     # render is display the placed towers, and the currently being placed tower
     def render(self, screen):
         for tower in self.towers:
@@ -126,24 +144,27 @@ class TowerManager:
             pygame.draw.circle(range_surface, range_color, (self.the_tower.range, self.the_tower.range), self.the_tower.range)
             screen.blit(range_surface, (self.the_tower.rect.centerx - self.the_tower.range, self.the_tower.rect.centery - self.the_tower.range))
 
-        # this displays bullets from each type of tower according to tower/bullet type
-        while self.bullets_to_render:
-            bullet = self.bullets_to_render.pop(0)
-            bullet_type = self.towers[bullet[1]].get_type()
-            if bullet_type == 1:
-                pygame.draw.line(screen, (128, 30, 232), self.towers[bullet[1]].get_position(), bullet[0], width = 3)
-            elif bullet_type == 2:
-                pygame.draw.line(screen, (255, 255, 0), self.towers[bullet[1]].get_position(), bullet[0], width = 4)
-            elif bullet_type == 3:
-                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width = 6)
-            elif bullet_type == 4:
-                pygame.draw.line(screen, (30, 229, 247), self.towers[bullet[1]].get_position(), bullet[0], width= 8)
-            elif bullet_type == 5:
-                pygame.draw.line(screen, (255, 0, 0), self.towers[bullet[1]].get_position(), bullet[0], width= 11)
+        # render bullets
+        for bullet in self.bullets:
+            tower_type = self.towers[bullet['tower_id']].get_type()
+            if tower_type == 1:
+                color = (128, 30, 232)
+                width = 3
+            elif tower_type == 2:
+                color = (255, 255, 0)
+                width = 4
+            elif tower_type == 3:
+                color = (255, 0, 0)
+                width = 6
+            elif tower_type == 4:
+                color = (30, 229, 247)
+                width = 8
+            elif tower_type == 5:
+                color = (255, 0, 0)
+                width = 11
+            pygame.draw.line(screen, color, self.towers[bullet['tower_id']].get_position(), bullet['current_pos'], width)
 
-
-
-    # this function
+    # Returns a list of dictionaries, which themselves contain next checkpoint, current x and y coordinates plus an id
     def get_attacking_towers(self):
         attacking_towers = []
         for index, tower in enumerate(self.towers):
@@ -162,4 +183,11 @@ class TowerManager:
             return False
 
     def prepare_attack_animations(self, bullets):
-        self.bullets_to_render = bullets
+        for bullet in bullets:
+            start_pos = self.towers[bullet['id']].get_position()
+            target_pos = bullet['position']
+            self.bullets.append({
+                'current_pos': start_pos,
+                'target_pos': target_pos,
+                'tower_id': bullet['id']
+            })

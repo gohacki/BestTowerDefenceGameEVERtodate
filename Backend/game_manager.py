@@ -221,7 +221,7 @@ class GameManager:
                     if distance_to_tower_squared <= tower_range_squared \
                             and self.tower_manager.reset_attack_cooldown(tower["id"]):
                         damage_result = self.enemy_manager.deal_damage(enemy["enemy_id"], tower["damage"])
-                        bullets.append((enemy_position, tower["id"]))
+                        bullets.append({"position": enemy_position, "id": tower["id"]})
 
                         if damage_result == 2:  # the enemy died
                             enemy_positions.pop(index)
