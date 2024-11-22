@@ -1,6 +1,7 @@
 import pygame
 from math import sqrt
 
+
 # Tower Class allowing tower objects to be placed on the screen
 class Tower:
     # initialize the tower object -- currently set as green square
@@ -14,40 +15,45 @@ class Tower:
 
         # Based on each tower type assign an image a tower cost, attack rate,range and damage accordingly.
         if tower_type == 1:
-            self.image = pygame.image.load("Assets/allison_tower.jpg")
-            self.image = pygame.transform.scale(self.image, (40,40))
+            self.original_image = pygame.image.load("Assets/allison_tower.jpg").convert()
+            self.original_image = pygame.transform.scale(self.original_image, (40, 40))
             self.cost = 100
             self.range = 75
             self.attack_rate = 50
             self.attack_damage = 2
         elif tower_type == 2:
-            self.image = pygame.image.load("Assets/eve_tower.jpeg")
-            self.image = pygame.transform.scale(self.image, (40,40))
+            self.original_image = pygame.image.load("Assets/eve_tower.jpeg").convert()
+            self.original_image = pygame.transform.scale(self.original_image, (40, 40))
             self.cost = 200
             self.range = 100
             self.attack_rate = 40
             self.attack_damage = 5
         elif tower_type == 3:
-            self.image = pygame.image.load("Assets/jasper_tower.jpeg")
-            self.image = pygame.transform.scale(self.image, (40,40))
+            self.original_image = pygame.image.load("Assets/jasper_tower.jpeg").convert()
+            self.original_image = pygame.transform.scale(self.original_image, (40, 40))
             self.cost = 300
             self.range = 150
             self.attack_rate = 35
             self.attack_damage = 20
         elif tower_type == 4:
-            self.image = pygame.image.load("Assets/miro_tower.jpeg")
-            self.image = pygame.transform.scale(self.image, (40,40))
+            self.original_image = pygame.image.load("Assets/miro_tower.jpeg").convert()
+            self.original_image = pygame.transform.scale(self.original_image, (40, 40))
             self.cost = 400
             self.range = 200
             self.attack_rate = 35
             self.attack_damage = 25
         elif tower_type == 5:
-            self.image = pygame.image.load("Assets/jason_tower.jpeg")
-            self.image = pygame.transform.scale(self.image, (40, 40))
+            self.original_image = pygame.image.load("Assets/jason_tower.jpeg").convert()
+            self.original_image = pygame.transform.scale(self.original_image, (40, 40))
             self.cost = 3000
             self.range = 500
             self.attack_rate = 20
             self.attack_damage = 35
+
+        # this is required so the game can redraw from the original image each time
+        self.original_image = self.original_image.convert_alpha()
+        self.image = self.original_image
+
         # sets each position centered on the bottom left rectangle
         self.rect = self.image.get_rect(center=position)
 
@@ -90,7 +96,7 @@ class Tower:
 
     # returns true if a tower is ready to attack and false otherwise
     def can_attack(self):
-        self.frames_since_attack +=1
+        self.frames_since_attack += 1
         if self.frames_since_attack >= self.attack_rate:
             return True
         else:
@@ -105,5 +111,11 @@ class Tower:
 
     def get_type(self):
         return self.tower_type
+
     def get_position(self):
         return self.position
+
+    def rotate(self, degrees):
+        self.image = pygame.transform.rotate(self.original_image, -degrees + 90)
+        rotated_center = self.position
+        self.rect = self.image.get_rect(center=rotated_center)

@@ -191,3 +191,10 @@ class TowerManager:
                 'target_pos': target_pos,
                 'tower_id': bullet['id']
             })
+            # This code calculates the angle to the enemy so the tower can be rotated to face the enemy
+            vec_enemy = pygame.math.Vector2(target_pos)
+            vec_attack = vec_enemy - start_pos
+            vec_attack = vec_attack.as_polar()
+            degrees = vec_attack[1]
+
+            self.towers[bullet['id']].rotate(degrees)
