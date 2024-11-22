@@ -2,6 +2,7 @@ import pygame
 from math import sqrt
 from .tower import Tower
 
+
 # TowerManager Class handles pressing of keys and mouse movement in order to place towers
 class TowerManager:
     # initialize towers to be a list of set towers
@@ -71,7 +72,6 @@ class TowerManager:
             else:
                 pass
 
-
     # is_tower_placeable asks if the tower can be placed at current mouse location given bounds of the path
     def is_tower_placeable(self, tower_rect):
         # check to see if the tower is overlapping the given path
@@ -95,7 +95,6 @@ class TowerManager:
         mouse_position = pygame.mouse.get_pos()
         self.the_tower = Tower(mouse_position, tower_type)
 
-
     # manage the new tower being placed by following the mouse cursor
     def update(self):
         if self.the_tower:
@@ -107,7 +106,7 @@ class TowerManager:
             # Move bullet towards target
             dx = bullet['target_pos'][0] - bullet['current_pos'][0]
             dy = bullet['target_pos'][1] - bullet['current_pos'][1]
-            distance = sqrt(dx**2 + dy**2)
+            distance = sqrt(dx ** 2 + dy ** 2)
             if distance != 0:
                 dx /= distance
                 dy /= distance
@@ -117,8 +116,8 @@ class TowerManager:
             # Check if bullet has reached or passed the target
             if ((dx >= 0 and bullet['current_pos'][0] >= bullet['target_pos'][0]) or
                 (dx < 0 and bullet['current_pos'][0] <= bullet['target_pos'][0])) and \
-               ((dy >= 0 and bullet['current_pos'][1] >= bullet['target_pos'][1]) or
-                (dy < 0 and bullet['current_pos'][1] <= bullet['target_pos'][1])):
+                    ((dy >= 0 and bullet['current_pos'][1] >= bullet['target_pos'][1]) or
+                     (dy < 0 and bullet['current_pos'][1] <= bullet['target_pos'][1])):
                 self.bullets.remove(bullet)
 
     # render is display the placed towers, and the currently being placed tower
@@ -141,8 +140,10 @@ class TowerManager:
                 range_color = (255, 0, 0, 100)  # red to show it is invalid
 
             range_surface = pygame.Surface((self.the_tower.range * 2, self.the_tower.range * 2), pygame.SRCALPHA)
-            pygame.draw.circle(range_surface, range_color, (self.the_tower.range, self.the_tower.range), self.the_tower.range)
-            screen.blit(range_surface, (self.the_tower.rect.centerx - self.the_tower.range, self.the_tower.rect.centery - self.the_tower.range))
+            pygame.draw.circle(range_surface, range_color, (self.the_tower.range, self.the_tower.range),
+                               self.the_tower.range)
+            screen.blit(range_surface, (
+            self.the_tower.rect.centerx - self.the_tower.range, self.the_tower.rect.centery - self.the_tower.range))
 
         # render bullets
         for bullet in self.bullets:
@@ -162,7 +163,8 @@ class TowerManager:
             elif tower_type == 5:
                 color = (255, 0, 0)
                 width = 11
-            pygame.draw.line(screen, color, self.towers[bullet['tower_id']].get_position(), bullet['current_pos'], width)
+            pygame.draw.line(screen, color, self.towers[bullet['tower_id']].get_position(), bullet['current_pos'],
+                             width)
 
     # Returns a list of dictionaries, which themselves contain next checkpoint, current x and y coordinates plus an id
     def get_attacking_towers(self):
@@ -191,3 +193,10 @@ class TowerManager:
                 'target_pos': target_pos,
                 'tower_id': bullet['id']
             })
+            # This code calculates the angle to the enemy so the tower can be rotated to face the enemy
+            vec_enemy = pygame.math.Vector2(target_pos)
+            vec_attack = vec_enemy - start_pos
+            vec_attack = vec_attack.as_polar()
+            degrees = vec_attack[1]
+
+            self.towers[bullet['id']].rotate(degrees)

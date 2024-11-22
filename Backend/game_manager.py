@@ -205,7 +205,9 @@ class GameManager:
         attacking_towers = self.tower_manager.get_attacking_towers()
         enemy_positions = self.enemy_manager.get_positions()
         checkpoints = self.map_manager.get_checkpoints()
+
         bullets = []
+        # calculate distance each enemy is from the end
         for enemy in enemy_positions:
             next_checkpoint_coords = checkpoints[enemy["next_checkpoint"]]
             enemy_position = pygame.math.Vector2(enemy["enemy_x"], enemy["enemy_y"])
@@ -216,19 +218,21 @@ class GameManager:
         enemy_positions.sort(key=lambda position: position["next_checkpoint"], reverse=True)
 
         for tower in attacking_towers:
+
             if tower:
-                # Tower range squared
                 tower_range_squared = tower["range"] ** 2
+
                 for index, enemy in enumerate(enemy_positions):
                     enemy_position = pygame.math.Vector2(enemy["enemy_x"], enemy["enemy_y"])
                     distance_to_tower_squared = enemy_position.distance_squared_to(tower["position"])
 
                     if distance_to_tower_squared <= tower_range_squared \
                             and self.tower_manager.reset_attack_cooldown(tower["id"]):
+
                         damage_result = self.enemy_manager.deal_damage(enemy["enemy_id"], tower["damage"])
                         bullets.append({"position": enemy_position, "id": tower["id"]})
 
-                        if damage_result == 2:  # the enemy died
+                        if damage_result == 2:  # the enemy died so remove it from the enemies
                             enemy_positions.pop(index)
                             self.currency += ENEMY_KILL_VALUE
                         # the tower has now attacked an enemy, move to the next tower
