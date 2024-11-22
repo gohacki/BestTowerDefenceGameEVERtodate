@@ -25,23 +25,23 @@ class Enemy:
         match enemy_type:
             # Bog-standard enemy
             case "default":
-                self.health = 100
-                self.speed = 4
+                self.health = 200
+                self.speed = 3
                 self.sprite = pygame.image.load("Assets/Solid_red.png")
             # Slow but high health
             case "slow":
-                self.health = 300
-                self.speed = 6
+                self.health = 800
+                self.speed = 5
                 self.sprite = pygame.image.load("Assets/Dark_green.PNG")
             # Fast but low health
             case "fast":
-                self.health = 50
-                self.speed = 2
+                self.health = 100
+                self.speed = 1
                 self.sprite = pygame.image.load("Assets/Light_blue.png")
             # Pretty good speed and health
             case "strong":
-                self.health = 400
-                self.speed = 3
+                self.health = 600
+                self.speed = 2
                 self.sprite = pygame.image.load("Assets/Solid_yellow.png")
 
         # Set sprite as correct size

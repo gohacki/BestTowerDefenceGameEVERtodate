@@ -8,3 +8,13 @@ default
 800
 fast
 100
+default
+150
+default
+150
+default
+150
+default
+800
+fast
+100
