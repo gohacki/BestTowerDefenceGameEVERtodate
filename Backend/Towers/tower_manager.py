@@ -188,11 +188,7 @@ class TowerManager:
         for bullet in bullets:
             start_pos = self.towers[bullet['id']].get_position()
             target_pos = bullet['position']
-            self.bullets.append({
-                'current_pos': start_pos,
-                'target_pos': target_pos,
-                'tower_id': bullet['id']
-            })
+            self.bullets = bullets
             # This code calculates the angle to the enemy so the tower can be rotated to face the enemy
             vec_enemy = pygame.math.Vector2(target_pos)
             vec_attack = vec_enemy - start_pos

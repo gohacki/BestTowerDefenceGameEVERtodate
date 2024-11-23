@@ -82,13 +82,14 @@ class Enemy:
         self.counter += 1
         # Handle freeze mechanic; I put it here because it's doing that instead of moving, I suppose
         if self.is_frozen:
+            self.freeze_time -= 1
+            print(self.freeze_time)
             # If it's ready to thaw out
-            if self.thaw_timer < self.freeze_time:
+            if self.freeze_time <= 0:
                 self.is_frozen = False
-            self.thaw_timer += 1
 
         # If it's time to move
-        if self.counter == self.speed:
+        elif self.counter >= self.speed:
             # X value of next checkpoint
             check_x = self.checkpoints[self.curr_checkpoint][0]
             # Y value of next checkpoint

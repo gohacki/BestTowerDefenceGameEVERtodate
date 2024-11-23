@@ -89,9 +89,7 @@ class EnemyManager:
 
         # Advance all spawned enemies
         for enemy in self.enemies:
-            # Check if it's frozen
-            if not enemy.get_is_frozen():
-                enemy.advance()
+            enemy.advance()
             # Eliminate if it reaches the last checkpoint
             if enemy.has_reached_goal():
                 self.enemies.remove(enemy)
