@@ -175,7 +175,7 @@ class GameManager:
         if tower.upgrades.get(path, 0) >= tower.max_upgrade_level:
             self.ui_manager.set_notification(f"{path.replace('_', ' ').title()} is already at max level!")
             return
-        # if the player has enought dabloons to go through with the update
+        # if the player has enough dabloons to go through with the update
         if self.currency >= cost:
             if tower.apply_upgrade(path):
                 self.currency -= cost
@@ -200,14 +200,10 @@ class GameManager:
         self.selected_tower = None
         self.ui_manager.set_selected_tower(None)
 
-    # manages the towers attacking enemies and controls tower attacks
-    def manage_attacks(self):
-        attacking_towers = self.tower_manager.get_attacking_towers()
-        enemy_positions = self.enemy_manager.get_positions()
+    def calculate_enemy_progression(self, enemy_positions):
+
         checkpoints = self.map_manager.get_checkpoints()
 
-        bullets = []
-        # calculate distance each enemy is from the end
         for enemy in enemy_positions:
             next_checkpoint_coords = checkpoints[enemy["next_checkpoint"]]
             enemy_position = pygame.math.Vector2(enemy["enemy_x"], enemy["enemy_y"])
@@ -216,6 +212,17 @@ class GameManager:
         # sort enemies so that the enemy closest to the end is first
         enemy_positions.sort(key=lambda position: position["distance_next"])
         enemy_positions.sort(key=lambda position: position["next_checkpoint"], reverse=True)
+
+        return enemy_positions
+
+    # manages the towers attacking enemies and controls tower attacks
+    def manage_attacks(self):
+        attacking_towers = self.tower_manager.get_attacking_towers()
+        enemy_positions = self.enemy_manager.get_positions()
+
+        bullets = []
+        # calculate distance each enemy is from the end
+        enemy_positions = self.calculate_enemy_progression(enemy_positions)
 
         for tower in attacking_towers:
 
