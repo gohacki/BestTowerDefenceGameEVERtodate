@@ -43,7 +43,7 @@ class GameManager:
             pygame.quit()
             exit()
         # if user wishes to pause game they can type "p"
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN and self.state == "playing":
             if event.key == pygame.K_p:
                 self.paused = not self.paused
                 return  # Don't process further events when toggling pause
