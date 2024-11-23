@@ -3,9 +3,9 @@ from Backend.game_manager import GameManager
 
 SCREEN_WIDTH, SCREEN_HEIGHT, FPS = 1200, 700, 120
 
+
 def main():
     pygame.init()
-
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -28,6 +28,7 @@ def main():
         clock.tick(FPS)
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     main()

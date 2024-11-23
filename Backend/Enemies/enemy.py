@@ -27,31 +27,32 @@ class Enemy:
             case "default":
                 self.health = 200
                 self.speed = 3
-                self.sprite = pygame.image.load("Assets/Solid_red.png")
+                self.sprite = pygame.image.load("Assets/Solid_red.png").convert()
             # Slow but high health
             case "slow":
                 self.health = 800
                 self.speed = 5
-                self.sprite = pygame.image.load("Assets/Dark_green.PNG")
+                self.sprite = pygame.image.load("Assets/Dark_green.PNG").convert()
             # Fast but low health
             case "fast":
                 self.health = 100
                 self.speed = 1
-                self.sprite = pygame.image.load("Assets/Light_blue.png")
+                self.sprite = pygame.image.load("Assets/Light_blue.png").convert()
             # Pretty good speed and health
             case "strong":
                 self.health = 600
                 self.speed = 2
-                self.sprite = pygame.image.load("Assets/Solid_yellow.png")
+                self.sprite = pygame.image.load("Assets/Solid_yellow.png").convert()
 
         # Set sprite as correct size
         self.sprite = pygame.transform.scale(self.sprite, (20, 20))
+        self.rect = self.sprite.get_rect(center=(self.pos_x, self.pos_y))
 
     def get_x(self):
-        return self.pos_x
+        return self.rect.centerx
 
     def get_y(self):
-        return self.pos_y
+        return self.rect.centery
 
     def get_next_checkpoint(self):
         return self.curr_checkpoint
@@ -73,7 +74,7 @@ class Enemy:
     # Place the enemy visually on the screen
     def draw(self):
         # Draw sprite on canvas
-        self.canvas.blit(self.sprite, (self.pos_x, self.pos_y))
+        self.canvas.blit(self.sprite, self.rect)
 
     # Advances 1 pixel towards the next checkpoint once every x times it's called, with x = speed
     def advance(self):
@@ -94,24 +95,24 @@ class Enemy:
             check_y = self.checkpoints[self.curr_checkpoint][1]
 
             # Left of checkpoint
-            if self.pos_x < check_x:
-                self.pos_x += 1
+            if self.rect.centerx < check_x:
+                self.rect = self.rect.move(1, 0)
 
             # Right of checkpoint
-            if self.pos_x > check_x:
-                self.pos_x -= 1
+            if self.rect.centerx > check_x:
+                self.rect = self.rect.move(-1, 0)
 
             # Above checkpoint
-            if self.pos_y < check_y:
-                self.pos_y += 1
+            if self.rect.centery < check_y:
+                self.rect = self.rect.move(0, 1)
 
             # Below checkpoint
-            if self.pos_y > check_y:
-                self.pos_y -= 1
+            if self.rect.centery > check_y:
+                self.rect = self.rect.move(0, -1)
 
             # In line with checkpoint
-            if check_x == self.pos_x:
-                if check_y == self.pos_y:
+            if check_x == self.rect.center[0]:
+                if check_y == self.rect.center[1]:
                     self.curr_checkpoint += 1
                     # If we reached the last checkpoint, don't advance to next one
                     if self.curr_checkpoint == len(self.checkpoints):
