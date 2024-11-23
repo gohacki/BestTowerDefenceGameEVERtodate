@@ -222,7 +222,7 @@ class GameManager:
 
         return enemy_positions
 
-    def freeze_attack(self, enemy_positions, tower):
+    def freeze_attack(self, enemy_positions, tower, freeze_animations):
 
         attacked = False
         tower_range_squared = tower["range"] ** 2
@@ -234,7 +234,7 @@ class GameManager:
 
             if distance_to_tower_squared <= tower_range_squared:
                 self.enemy_manager.freeze(enemy["enemy_id"], FREEZE_TIME)
-                attack_animation = {"id": tower["id"]}
+                freeze_animations.append({"id": tower["id"]})
                 attacked = True
 
         return attacked

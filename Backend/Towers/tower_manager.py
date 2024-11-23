@@ -17,7 +17,11 @@ class TowerManager:
         # initialize path that towers cannot be placed on
         self.path_mask = path_mask
         self.bullets = []
+        self.freeze_to_animate = []
+        self.multi_to_animate = []
         self.selected_tower = None
+        self.freeze_sprite = pygame.image.load("Assets/Freeze_graphic.png").convert()
+        self.freeze_sprite = self.freeze_sprite.convert_alpha(screen)
 
     # handle_event responds to user interaction such as pressing keys or moving/clicking the mouse
     def handle_event(self, event):
@@ -110,7 +114,7 @@ class TowerManager:
             if distance != 0:
                 dx /= distance
                 dy /= distance
-            speed = 10  # pixels per frame
+            speed = 20  # pixels per frame
             bullet['current_pos'] = (bullet['current_pos'][0] + dx * speed, bullet['current_pos'][1] + dy * speed)
 
             # Check if bullet has reached or passed the target
@@ -119,6 +123,9 @@ class TowerManager:
                     ((dy >= 0 and bullet['current_pos'][1] >= bullet['target_pos'][1]) or
                      (dy < 0 and bullet['current_pos'][1] <= bullet['target_pos'][1])):
                 self.bullets.remove(bullet)
+        # TODO: update freeze attack
+
+        # TODO: update multi_attack
 
     # render is display the placed towers, and the currently being placed tower
     def render(self, screen):
@@ -157,9 +164,6 @@ class TowerManager:
             elif tower_type == 3:
                 color = (255, 0, 0)
                 width = 6
-            elif tower_type == 4:
-                color = (30, 229, 247)
-                width = 8
             elif tower_type == 5:
                 color = (255, 0, 0)
                 width = 11
@@ -184,11 +188,15 @@ class TowerManager:
         except IndexError:
             return False
 
-    def prepare_attack_animations(self, bullets):
+    def prepare_attack_animations(self, bullets, multi_animations, freeze_animations):
         for bullet in bullets:
             start_pos = self.towers[bullet['id']].get_position()
             target_pos = bullet['position']
-            self.bullets = bullets
+            self.bullets.append({
+                'current_pos': start_pos,
+                'target_pos': target_pos,
+                'tower_id': bullet['id']
+            })
             # This code calculates the angle to the enemy so the tower can be rotated to face the enemy
             vec_enemy = pygame.math.Vector2(target_pos)
             vec_attack = vec_enemy - start_pos
@@ -196,3 +204,16 @@ class TowerManager:
             degrees = vec_attack[1]
 
             self.towers[bullet['id']].rotate(degrees)
+
+        for animation in multi_animations:
+            self.multi_to_animate.append({
+                "start_pos": animation["start_position"],
+                "end_pos": animation["end_position"]
+            })
+
+        for animation in freeze_animations:
+            self.freeze_to_animate = freeze_animations.append({
+                "tower_position": self.towers[animation["id"]].get_position(),
+                "size": 0,
+                "max_size":  self.towers[animation["id"]].get_range()
+            })

@@ -125,3 +125,6 @@ class Tower:
         self.image = pygame.transform.rotate(self.original_image, -degrees + 90)
         rotated_center = self.position
         self.rect = self.image.get_rect(center=rotated_center)
+
+    def get_range(self):
+        return self.range
