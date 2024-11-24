@@ -6,14 +6,10 @@ from .Enemies.enemy_manager import EnemyManager
 from .Maps.map import MapManager
 from .UI.ui_manager import UIManager  # Import the UIManager
 
-ENEMY_KILL_VALUE = 20
-
-FREEZE_TIME = 120  # this is the number of frames the freeze tower freezes an enemy for
-
+ENEMY_KILL_VALUE = 20  # this is the amount of dabloons per kill
+FREEZE_TIME = 120  # this is the number of frames the freeze tower freezes an enemy for\
 MAX_MULTI_ATTACKS = 3  # this is the number of enemies a multi attack can damage
 
-
-# TODO: Obviously this code does not create a level, so we may want to create the level_manager file too
 
 # Main class to handle each of the game states and potential interactions
 class GameManager:

@@ -143,9 +143,17 @@ class EnemyManager:
 
     def freeze(self, enemy_id, time):
         # Check to make sure that the enemy we intend to freeze actually exists
-        if enemy_id >= len(self.enemies):
+        found = False
+        for index, enemy in enumerate(self.enemies):
+            if enemy.get_id() == enemy_id:
+                found = True
+                enemy_index = index
+                break
+        if not found:
             return 0
-        self.enemies[enemy_id].freeze(time)
+        else:
+            # now call the freeze function if the enemy has been found
+            self.enemies[enemy_index].freeze(time)
 
     def get_waves_completed(self):
         return self.waves_completed

@@ -34,9 +34,9 @@ class Tower:
             self.original_image = pygame.image.load("Assets/jasper_tower.jpeg").convert()
             self.original_image = pygame.transform.scale(self.original_image, (40, 40))
             self.cost = 200
-            self.range = 300
+            self.range = 200
             self.attack_rate = 120
-            self.attack_damage = 90
+            self.attack_damage = 80
             self.attack_type = "single_damage"
         elif tower_type == 4:
             self.original_image = pygame.image.load("Assets/miro_tower.jpeg").convert()
@@ -50,7 +50,7 @@ class Tower:
             self.original_image = pygame.image.load("Assets/jason_tower.jpeg").convert()
             self.original_image = pygame.transform.scale(self.original_image, (40, 40))
             self.cost = 1500
-            self.range = 500
+            self.range = 400
             self.attack_rate = 30
             self.attack_damage = 70
             self.attack_type = "multi_damage"
