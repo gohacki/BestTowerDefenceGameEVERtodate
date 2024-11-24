@@ -20,7 +20,7 @@ class TowerManager:
         self.freeze_to_animate = []
         self.multi_to_animate = []
         self.selected_tower = None
-        self.freeze_sprite = pygame.image.load("Assets/Freeze_graphic.png").convert()
+        self.freeze_sprite = pygame.image.load("Assets/freeze_animation.png").convert()
         self.freeze_sprite = self.freeze_sprite.convert_alpha(screen)
 
     # handle_event responds to user interaction such as pressing keys or moving/clicking the mouse
@@ -237,7 +237,7 @@ class TowerManager:
             })
 
         for animation in freeze_animations:
-            self.freeze_to_animate = freeze_animations.append({
+            self.freeze_to_animate.append({
                 "tower_position": self.towers[animation["id"]].get_position(),
                 "size": 0,
                 "max_size":  self.towers[animation["id"]].get_range()

@@ -288,8 +288,7 @@ class GameManager:
         # this part chains the damage between the next closest enemies
         while 1 <= attacks <= MAX_MULTI_ATTACKS:
 
-            screen_size = self.screen.get_window_size
-            closest_enemy_dist_squared = screen_size[0]**2 + screen_size[1]**2
+            closest_enemy_dist_squared = 999999999  # infinite distance
             closest_enemy_index = None
             # this loop finds the closest enemy to the last attacked enemy
             for index, enemy in enumerate(enemy_positions):
@@ -346,7 +345,6 @@ class GameManager:
                     attacked = self.multi_damage_attack(enemy_positions, tower, bullets, multi_attack_animations)
                     if attacked:
                         self.tower_manager.reset_attack_cooldown(tower["id"])
-
         self.tower_manager.prepare_attack_animations(bullets, multi_attack_animations, freeze_animations)
 
     def get_current_wave(self):

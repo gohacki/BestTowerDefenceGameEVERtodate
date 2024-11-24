@@ -43,7 +43,7 @@ class Tower:
             self.original_image = pygame.transform.scale(self.original_image, (40, 40))
             self.cost = 400
             self.range = 90
-            self.attack_rate = 100
+            self.attack_rate = 150
             self.attack_damage = 25
             self.attack_type = "freeze"
         elif tower_type == 5:
