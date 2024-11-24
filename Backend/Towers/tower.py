@@ -17,7 +17,7 @@ class Tower:
         if tower_type == 1:
             self.original_image = pygame.image.load("Assets/allison_tower.jpg").convert()
             self.original_image = pygame.transform.scale(self.original_image, (40, 40))
-            self.cost = 100
+            self.cost = 200
             self.range = 100
             self.attack_rate = 15
             self.attack_damage = 10
@@ -25,35 +25,35 @@ class Tower:
         elif tower_type == 2:
             self.original_image = pygame.image.load("Assets/eve_tower.jpeg").convert()
             self.original_image = pygame.transform.scale(self.original_image, (40, 40))
-            self.cost = 200
+            self.cost = 500
             self.range = 100
-            self.attack_rate = 40
-            self.attack_damage = 5
+            self.attack_rate = 45
+            self.attack_damage = 45
             self.attack_type = "multi_damage"
         elif tower_type == 3:
             self.original_image = pygame.image.load("Assets/jasper_tower.jpeg").convert()
             self.original_image = pygame.transform.scale(self.original_image, (40, 40))
-            self.cost = 300
+            self.cost = 200
             self.range = 300
-            self.attack_rate = 100
+            self.attack_rate = 120
             self.attack_damage = 90
             self.attack_type = "single_damage"
         elif tower_type == 4:
             self.original_image = pygame.image.load("Assets/miro_tower.jpeg").convert()
             self.original_image = pygame.transform.scale(self.original_image, (40, 40))
-            self.cost = 400
+            self.cost = 300
             self.range = 90
             self.attack_rate = 150
-            self.attack_damage = 25
+            self.attack_damage = 0
             self.attack_type = "freeze"
         elif tower_type == 5:
             self.original_image = pygame.image.load("Assets/jason_tower.jpeg").convert()
             self.original_image = pygame.transform.scale(self.original_image, (40, 40))
-            self.cost = 3000
+            self.cost = 1500
             self.range = 500
-            self.attack_rate = 20
-            self.attack_damage = 35
-            self.attack_type = "area"
+            self.attack_rate = 30
+            self.attack_damage = 70
+            self.attack_type = "multi_damage"
 
         # this is required so the game can redraw from the original image each time
         self.original_image = self.original_image.convert_alpha()

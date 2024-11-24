@@ -57,7 +57,7 @@ class TowerManager:
                 mouse_pos = pygame.mouse.get_pos()
                 # loop through all the towers
                 for tower in self.towers:
-                    # if mouse is hovering and selecting a given tower pass into selection funciton
+                    # if mouse is hovering and selecting a given tower pass into selection function
                     if tower.rect.collidepoint(mouse_pos):
                         self.selected_tower = tower
                         self.game_manager.set_selected_tower(tower)
@@ -65,7 +65,7 @@ class TowerManager:
                 self.selected_tower = None
                 self.game_manager.set_selected_tower(None)
 
-        # if the tower is selected and you want to drop it off back at home instead of placing it
+        # if the tower is selected, and you want to drop it off back at home instead of placing it
         elif event.type == pygame.MOUSEBUTTONUP and self.the_tower:
             mouse_position = pygame.mouse.get_pos()
             distance_to_home = sqrt((mouse_position[0] - self.the_tower.home_position[0]) ** 2 +
@@ -114,7 +114,7 @@ class TowerManager:
             if distance != 0:
                 dx /= distance
                 dy /= distance
-            speed = 20  # pixels per frame
+            speed = 25  # pixels per frame
             bullet['current_pos'] = (bullet['current_pos'][0] + dx * speed, bullet['current_pos'][1] + dy * speed)
 
             # Check if bullet has reached or passed the target
@@ -231,13 +231,11 @@ class TowerManager:
             self.towers[bullet['id']].rotate(degrees)
 
         for animation in multi_animations:
-            print(animation)
             self.multi_to_animate.append({
                 "start_pos": animation["start_position"],
                 "end_pos": animation["end_position"],
                 "frames_drawn": 0
             })
-        print("\nNext Frame:")
 
         for animation in freeze_animations:
             self.freeze_to_animate.append({

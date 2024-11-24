@@ -12,9 +12,6 @@ FREEZE_TIME = 120  # this is the number of frames the freeze tower freezes an en
 
 MAX_MULTI_ATTACKS = 3  # this is the number of enemies a multi attack can damage
 
-# multiplier for cascading attacks each subsequent enemy will take this much less damage
-MULTI_ATTACK_MULTIPLIER = 0.5
-
 
 # TODO: Obviously this code does not create a level, so we may want to create the level_manager file too
 
@@ -259,13 +256,12 @@ class GameManager:
                 return True
 
     def multi_damage_attack(self, enemy_positions, tower, bullets, multi_animations):
-
         attacks = 0
         tower_range_squared = tower["range"] ** 2
         last_enemy_attacked = None
         damage = tower["damage"]
         enemies_damaged = []
-        damage_result = []
+        damage_results = []
 
         # this loop finds the first enemy to attack
         for index, enemy in enumerate(enemy_positions):
@@ -274,11 +270,9 @@ class GameManager:
             distance_to_tower_squared = enemy_position.distance_squared_to(tower["position"])
 
             if distance_to_tower_squared <= tower_range_squared:
-
-                damage_result.append([self.enemy_manager.deal_damage(enemy["enemy_id"], damage), index])
+                damage_results.append([self.enemy_manager.deal_damage(enemy["enemy_id"], damage), enemy["enemy_id"]])
                 bullets.append({"position": enemy_position, "id": tower["id"]})
                 enemies_damaged.append(index)
-
                 attacks = 1
 
                 # an enemy has attacked, time to find another enemy
@@ -286,9 +280,9 @@ class GameManager:
                 break
 
         # this part chains the damage between the next closest enemies
-        while 1 <= attacks <= MAX_MULTI_ATTACKS:
+        while 1 <= attacks < MAX_MULTI_ATTACKS:
 
-            closest_enemy_dist_squared = 999999999  # infinite distance
+            closest_enemy_dist_squared = 1960000  # max chain range = 1400
             closest_enemy_index = None
 
             # this loop finds the closest enemy to the last attacked enemy
@@ -301,23 +295,29 @@ class GameManager:
                     closest_enemy_index = index
 
             if closest_enemy_index:
-                damage *= MULTI_ATTACK_MULTIPLIER
-                self.enemy_manager.deal_damage(enemy_positions[closest_enemy_index]["enemy_id"], damage)
+                attack_result = self.enemy_manager.deal_damage(enemy_positions[closest_enemy_index]["enemy_id"], damage)
+                damage_results.append([attack_result, enemy_positions[closest_enemy_index]["enemy_id"]])
                 new_enemy_pos = pygame.math.Vector2(enemy_positions[closest_enemy_index]["enemy_x"],
                                                     enemy_positions[closest_enemy_index]["enemy_y"])
                 multi_animations.append({"start_position": last_enemy_attacked_pos, "id": tower["id"],
                                          "end_position": new_enemy_pos})
                 last_enemy_attacked_pos = new_enemy_pos
+                enemies_damaged.append(closest_enemy_index)
                 attacks += 1
             else:
                 # there is no next closest enemy
                 break
-
         if attacks > 0:
-            for enemy in damage_result:
-                if enemy[1] == 2:  # the enemy died so remove it from the enemies
-                    enemy_positions.pop(enemy[0])
+            for enemy in damage_results:
+                if enemy[0] == 2:  # the enemy died so remove it from the enemies
+
                     self.currency += ENEMY_KILL_VALUE
+            while damage_results:
+                enemy_id = damage_results.pop(0)
+                for index, enemy in enumerate(enemy_positions):
+                    if enemy["enemy_id"] == enemy_id:
+                        enemy_positions.pop(index)
+                        break
             return True
         else:
             return False
@@ -352,6 +352,7 @@ class GameManager:
                     if attacked:
                         self.tower_manager.reset_attack_cooldown(tower["id"])
         self.tower_manager.prepare_attack_animations(bullets, multi_attack_animations, freeze_animations)
+        self.enemy_manager.clear_dead_enemies()
 
     def get_current_wave(self):
         return self.enemy_manager.wave_counter

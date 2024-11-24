@@ -3,7 +3,7 @@ import pygame
 
 class Enemy:
 
-    def __init__(self, canvas, checkpoints, enemy_type):
+    def __init__(self, canvas, checkpoints, enemy_type, id):
         self.canvas = canvas
         # List of points on the map that enemies approach
         self.checkpoints = checkpoints
@@ -21,6 +21,8 @@ class Enemy:
         self.is_frozen = False
         self.freeze_time = 0
         self.thaw_timer = 0
+
+        self.id = id
 
         match enemy_type:
             # Bog-standard enemy
@@ -124,3 +126,6 @@ class Enemy:
     
     def has_reached_goal(self):
         return self.reached_end
+
+    def get_id(self):
+        return self.id
