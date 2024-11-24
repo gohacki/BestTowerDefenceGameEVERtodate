@@ -123,9 +123,18 @@ class TowerManager:
                     ((dy >= 0 and bullet['current_pos'][1] >= bullet['target_pos'][1]) or
                      (dy < 0 and bullet['current_pos'][1] <= bullet['target_pos'][1])):
                 self.bullets.remove(bullet)
-        # TODO: update freeze attack
+
+        # this increases the size of the freeze attack animation
+        freeze_animation_frames = 10
+        for animation in self.freeze_to_animate:
+
+            animation["size"] += animation["max_size"]/freeze_animation_frames
+            # the animation is greater than it's max size
+            if animation["size"] > animation["max_size"]:
+                self.freeze_to_animate.remove(animation)
 
         # TODO: update multi_attack
+
 
     # render is display the placed towers, and the currently being placed tower
     def render(self, screen):
@@ -170,6 +179,21 @@ class TowerManager:
             pygame.draw.line(screen, color, self.towers[bullet['tower_id']].get_position(), bullet['current_pos'],
                              width)
 
+        # render freeze animations
+        for animation in self.freeze_to_animate:
+            sprite = pygame.transform.scale(self.freeze_sprite, (animation["size"]*2, animation["size"]*2))
+            rect = sprite.get_rect(center=animation['tower_position'])
+            screen.blit(sprite, rect)
+
+        # render multi_animations
+        for animation in self.multi_to_animate:
+            if animation["frames_drawn"] < 10:
+                start_pos = animation["start_pos"]
+                end_pos = animation["end_pos"]
+                pygame.draw.line(screen, (255, 255, 0), start_pos, end_pos, 4)
+            else:
+                self.multi_to_animate.remove(animation)
+
     # Returns a list of dictionaries, which themselves contain next checkpoint, current x and y coordinates plus an id
     def get_attacking_towers(self):
         attacking_towers = []
@@ -208,7 +232,8 @@ class TowerManager:
         for animation in multi_animations:
             self.multi_to_animate.append({
                 "start_pos": animation["start_position"],
-                "end_pos": animation["end_position"]
+                "end_pos": animation["end_position"],
+                "frames_drawn": 0
             })
 
         for animation in freeze_animations:

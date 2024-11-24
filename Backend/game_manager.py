@@ -8,7 +8,7 @@ from .UI.ui_manager import UIManager  # Import the UIManager
 
 ENEMY_KILL_VALUE = 20
 
-FREEZE_TIME = 60  # this is the number of frames the freeze tower freezes an enemy for
+FREEZE_TIME = 120  # this is the number of frames the freeze tower freezes an enemy for
 
 MAX_MULTI_ATTACKS = 3  # this is the number of enemies a multi attack can damage
 
