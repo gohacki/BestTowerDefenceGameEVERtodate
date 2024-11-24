@@ -125,7 +125,7 @@ class TowerManager:
                 self.bullets.remove(bullet)
 
         # this increases the size of the freeze attack animation
-        freeze_animation_frames = 10
+        freeze_animation_frames = 15
         for animation in self.freeze_to_animate:
 
             animation["size"] += animation["max_size"]/freeze_animation_frames
@@ -191,6 +191,7 @@ class TowerManager:
                 start_pos = animation["start_pos"]
                 end_pos = animation["end_pos"]
                 pygame.draw.line(screen, (255, 255, 0), start_pos, end_pos, 4)
+                animation["frames_drawn"] += 1
             else:
                 self.multi_to_animate.remove(animation)
 
@@ -230,11 +231,13 @@ class TowerManager:
             self.towers[bullet['id']].rotate(degrees)
 
         for animation in multi_animations:
+            print(animation)
             self.multi_to_animate.append({
                 "start_pos": animation["start_position"],
                 "end_pos": animation["end_position"],
                 "frames_drawn": 0
             })
+        print("\nNext Frame:")
 
         for animation in freeze_animations:
             self.freeze_to_animate.append({

@@ -264,6 +264,8 @@ class GameManager:
         tower_range_squared = tower["range"] ** 2
         last_enemy_attacked = None
         damage = tower["damage"]
+        enemies_damaged = []
+        damage_result = []
 
         # this loop finds the first enemy to attack
         for index, enemy in enumerate(enemy_positions):
@@ -273,14 +275,12 @@ class GameManager:
 
             if distance_to_tower_squared <= tower_range_squared:
 
-                damage_result = self.enemy_manager.deal_damage(enemy["enemy_id"], damage)
+                damage_result.append([self.enemy_manager.deal_damage(enemy["enemy_id"], damage), index])
                 bullets.append({"position": enemy_position, "id": tower["id"]})
+                enemies_damaged.append(index)
 
                 attacks = 1
 
-                if damage_result == 2:  # the enemy died so remove it from the enemies
-                    enemy_positions.pop(index)
-                    self.currency += ENEMY_KILL_VALUE
                 # an enemy has attacked, time to find another enemy
                 last_enemy_attacked_pos = enemy_position
                 break
@@ -290,11 +290,13 @@ class GameManager:
 
             closest_enemy_dist_squared = 999999999  # infinite distance
             closest_enemy_index = None
+
             # this loop finds the closest enemy to the last attacked enemy
             for index, enemy in enumerate(enemy_positions):
                 next_enemy_position = pygame.math.Vector2(enemy["enemy_x"], enemy["enemy_y"])
                 distance_between_enemies_squared = last_enemy_attacked_pos.distance_squared_to(next_enemy_position)
-                if distance_between_enemies_squared < closest_enemy_dist_squared:
+
+                if 0 < distance_between_enemies_squared < closest_enemy_dist_squared and index not in enemies_damaged:
                     closest_enemy_dist_squared = distance_between_enemies_squared
                     closest_enemy_index = index
 
@@ -312,6 +314,10 @@ class GameManager:
                 break
 
         if attacks > 0:
+            for enemy in damage_result:
+                if enemy[1] == 2:  # the enemy died so remove it from the enemies
+                    enemy_positions.pop(enemy[0])
+                    self.currency += ENEMY_KILL_VALUE
             return True
         else:
             return False

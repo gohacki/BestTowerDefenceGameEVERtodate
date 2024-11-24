@@ -83,7 +83,6 @@ class Enemy:
         # Handle freeze mechanic; I put it here because it's doing that instead of moving, I suppose
         if self.is_frozen:
             self.freeze_time -= 1
-            print(self.freeze_time)
             # If it's ready to thaw out
             if self.freeze_time <= 0:
                 self.is_frozen = False
