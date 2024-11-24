@@ -66,7 +66,7 @@ class UIManager:
             self.screen.blit(tower_label, label_rect)
 
             # display the price of each tower
-            price = ["đ 100", "đ 200", "đ 300", "đ 400", "đ 3000"]
+            price = ["đ 200", "đ 500", "đ 200", "đ 300", "đ 1500"]
             tower_cost = self.font.render(f"{price[tower_type - 1]}", True, (255, 255, 0))
             cost_rect = tower_cost.get_rect(center=(rect.centerx, rect.bottom + 38))
             self.screen.blit(tower_cost, cost_rect)
