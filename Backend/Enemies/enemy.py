@@ -29,26 +29,27 @@ class Enemy:
             case "default":
                 self.health = 200
                 self.speed = 3
-                self.sprite = pygame.image.load("Assets/Solid_red.png").convert()
+                self.sprite = pygame.image.load("Assets/Enemy_red.png").convert()
             # Slow but high health
             case "slow":
                 self.health = 800
                 self.speed = 5
-                self.sprite = pygame.image.load("Assets/Dark_green.PNG").convert()
+                self.sprite = pygame.image.load("Assets/Enemy_green.PNG").convert()
             # Fast but low health
             case "fast":
                 self.health = 100
                 self.speed = 1
-                self.sprite = pygame.image.load("Assets/Light_blue.png").convert()
+                self.sprite = pygame.image.load("Assets/Enemy_blue.png").convert()
             # Pretty good speed and health
             case "strong":
                 self.health = 600
                 self.speed = 2
-                self.sprite = pygame.image.load("Assets/Solid_yellow.png").convert()
+                self.sprite = pygame.image.load("Assets/Enemy_yellow.png").convert()
 
         # Set sprite as correct size
-        self.sprite = pygame.transform.scale(self.sprite, (20, 20))
+        self.sprite = pygame.transform.scale(self.sprite, (35, 25))
         self.rect = self.sprite.get_rect(center=(self.pos_x, self.pos_y))
+        self.sprite = self.sprite.convert_alpha(canvas)
 
     def get_x(self):
         return self.rect.centerx
